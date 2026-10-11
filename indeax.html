@@ -1,0 +1,1211 @@
+<title>Programming 1 Midterm Quiz</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout concept: graph-paper answer sheet. Left-aligned masthead, level selector row, one question card at a time with a numbered jump grid. */
+:root{
+  --bg:#F3F6F2; --surface:#FFFFFF; --surface-2:#E7EEE6; --fg:#13231A; --muted:#54675B; --line:#C9D6CB;
+  --grid:rgba(30,107,67,.07); --accent:#1E6B43; --on-accent:#FFFFFF; --hl:#F0B429;
+  --good:#17703F; --good-bg:#DCF1E3; --bad:#A93220; --bad-bg:#F9E1DB;
+  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1511; --surface:#15211A; --surface-2:#1D2D24; --fg:#E5EEE7; --muted:#9BB0A2; --line:#2B3E33;
+    --grid:rgba(92,195,138,.06); --accent:#58C48C; --on-accent:#08140D; --hl:#F0B429;
+    --good:#6FD39A; --good-bg:#17301F; --bad:#FF8A73; --bad-bg:#3A1C16; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1511; --surface:#15211A; --surface-2:#1D2D24; --fg:#E5EEE7; --muted:#9BB0A2; --line:#2B3E33;
+  --grid:rgba(92,195,138,.06); --accent:#58C48C; --on-accent:#08140D; --hl:#F0B429;
+  --good:#6FD39A; --good-bg:#17301F; --bad:#FF8A73; --bad-bg:#3A1C16; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background-color:var(--bg); color:var(--fg); font-family:var(--f-body); font-size:16px; line-height:1.55;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px; padding-inline:16px;
+}
+.wrap{max-width:780px; margin-inline:auto; padding-block:28px 64px; display:flex; flex-direction:column; gap:24px}
+.mast{display:flex; flex-direction:column; gap:10px}
+.eyebrow{font-family:var(--f-mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0}
+h1{font-family:var(--f-display); font-weight:800; font-size:clamp(2.4rem,8vw,3.8rem); line-height:1; letter-spacing:-.02em; margin:0; text-wrap:balance}
+.lede{margin:0; max-width:60ch; color:var(--muted)}
+.strip{width:100%; max-width:520px; height:auto; color:var(--fg); margin-top:4px}
+.strip text{font-family:var(--f-mono); font-size:8.5px; fill:var(--fg); text-anchor:middle}
+
+.levels{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px}
+.lv{
+  text-align:left; font:inherit; color:inherit; background:var(--surface); border:1px solid var(--line); border-radius:6px;
+  padding:14px 16px; cursor:pointer; display:flex; flex-direction:column; gap:4px; min-width:0;
+}
+.lv:hover{border-color:var(--accent)}
+.lv[aria-pressed="true"]{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
+.lv .k{font-family:var(--f-mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent)}
+.lv .n{font-family:var(--f-display); font-weight:600; font-size:1.25rem; line-height:1.15}
+.lv .m{font-size:13px; color:var(--muted)}
+.opts{display:flex; flex-wrap:wrap; gap:8px 22px; font-size:14px; color:var(--muted)}
+.opts label{display:flex; align-items:center; gap:8px; cursor:pointer}
+.opts input{accent-color:var(--accent); width:16px; height:16px}
+
+.card{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:20px; display:flex; flex-direction:column; gap:16px; min-width:0}
+.bar{display:flex; justify-content:space-between; align-items:baseline; gap:12px; flex-wrap:wrap; font-family:var(--f-mono); font-size:13px; color:var(--muted)}
+.bar b{color:var(--fg); font-weight:500}
+.prog{height:4px; background:var(--surface-2); border-radius:2px; overflow:hidden}
+.prog i{display:block; height:100%; background:var(--accent)}
+.chip{display:inline-block; font-family:var(--f-mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; padding:2px 8px; border:1px solid var(--line); border-radius:3px; color:var(--muted); background:var(--surface-2)}
+.q{font-family:var(--f-display); font-weight:600; font-size:clamp(1.15rem,3.6vw,1.45rem); line-height:1.3; margin:0; text-wrap:pretty}
+pre.code{margin:0; padding:12px 14px; background:var(--surface-2); border:1px solid var(--line); border-radius:4px; font-family:var(--f-mono); font-size:13.5px; line-height:1.55; overflow-x:auto; white-space:pre}
+.sym{display:block; width:150px; max-width:100%; height:auto; color:var(--fg)}
+.sym *{fill:var(--surface-2); stroke:currentColor; stroke-width:2; stroke-linejoin:round}
+.sym .ln{fill:none; stroke-linecap:round}
+.sym .hd{fill:currentColor}
+
+.ans{display:flex; flex-direction:column; gap:10px}
+.opt{
+  font:inherit; color:inherit; text-align:left; background:var(--surface); border:1px solid var(--line); border-radius:5px;
+  padding:11px 14px; cursor:pointer; display:flex; gap:12px; align-items:flex-start; min-width:0;
+}
+.opt:hover:not(:disabled){border-color:var(--accent); background:var(--surface-2)}
+.opt .l{flex:none; font-family:var(--f-mono); font-size:12px; width:22px; height:22px; border:1px solid var(--line); border-radius:3px; display:grid; place-items:center; color:var(--muted); margin-top:1px}
+.opt span:last-child{min-width:0; overflow-wrap:anywhere}
+.opt:disabled{cursor:default}
+.opt.is-right{border-color:var(--good); background:var(--good-bg)}
+.opt.is-right .l{background:var(--good); border-color:var(--good); color:var(--bg)}
+.opt.is-wrong{border-color:var(--bad); background:var(--bad-bg)}
+.opt.is-wrong .l{background:var(--bad); border-color:var(--bad); color:var(--bg)}
+.tf{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.tf .opt{justify-content:center; font-family:var(--f-mono); font-weight:500; letter-spacing:.08em; padding:14px}
+.idf{display:flex; gap:10px; flex-wrap:wrap}
+.idf input[type=text]{flex:1 1 220px; min-width:0; font:inherit; font-family:var(--f-mono); padding:11px 12px; background:var(--bg); color:var(--fg); border:1px solid var(--line); border-radius:5px}
+.idf input[type=text]:disabled{opacity:.85}
+.btn{
+  font:inherit; font-weight:600; cursor:pointer; border-radius:5px; padding:10px 16px; border:1px solid var(--accent);
+  background:var(--accent); color:var(--on-accent);
+}
+.btn.ghost{background:transparent; color:var(--fg); border-color:var(--line); font-weight:500}
+.btn.ghost:hover:not(:disabled){border-color:var(--accent)}
+.btn:disabled{opacity:.4; cursor:default}
+:focus-visible{outline:3px solid var(--hl); outline-offset:2px}
+.fb{border-radius:5px; padding:12px 14px; border:1px solid; display:flex; flex-direction:column; gap:6px; font-size:15px}
+.fb.ok{background:var(--good-bg); border-color:var(--good)}
+.fb.no{background:var(--bad-bg); border-color:var(--bad)}
+.fb strong{font-family:var(--f-display); font-size:1.05rem}
+.fb.ok strong{color:var(--good)} .fb.no strong{color:var(--bad)}
+.fb p{margin:0}
+.fb .a{font-family:var(--f-mono); font-size:14px}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+.row .sp{flex:1}
+
+details.jump{border-top:1px solid var(--line); padding-top:12px}
+details.jump summary{cursor:pointer; font-family:var(--f-mono); font-size:13px; color:var(--muted)}
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(34px,1fr)); gap:6px; margin-top:12px}
+.grid button{font-family:var(--f-mono); font-size:12px; padding:6px 0; border:1px solid var(--line); background:var(--surface); color:var(--fg); border-radius:3px; cursor:pointer}
+.grid button.ok{background:var(--good-bg); border-color:var(--good)}
+.grid button.no{background:var(--bad-bg); border-color:var(--bad)}
+.grid button.cur{outline:2px solid var(--fg); outline-offset:1px}
+
+.score{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap}
+.score .big{font-family:var(--f-display); font-weight:800; font-size:clamp(2.6rem,10vw,4rem); line-height:1}
+.score .pc{font-family:var(--f-mono); color:var(--muted)}
+.topics{display:flex; flex-direction:column; gap:8px; margin:0; padding:0; list-style:none}
+.topics li{display:grid; grid-template-columns:minmax(90px,130px) 1fr 52px; gap:10px; align-items:center; font-size:14px}
+.topics .t{font-family:var(--f-mono); font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted)}
+.topics .tr{height:8px; background:var(--surface-2); border-radius:2px; overflow:hidden}
+.topics .tr i{display:block; height:100%; background:var(--accent)}
+.topics .tr i.low{background:var(--bad)}
+.topics .v{font-family:var(--f-mono); font-size:12px; text-align:right}
+h2{font-family:var(--f-display); font-size:1.15rem; margin:0}
+.miss{display:flex; flex-direction:column; gap:10px; margin:0; padding:0; list-style:none}
+.miss li{border:1px solid var(--line); border-radius:5px; padding:10px 12px; background:var(--bg); font-size:14.5px; display:flex; flex-direction:column; gap:4px; min-width:0; overflow-wrap:anywhere}
+.miss .ca{font-family:var(--f-mono); font-size:13px; color:var(--good)}
+.miss .ya{font-family:var(--f-mono); font-size:13px; color:var(--bad)}
+.home{color:var(--muted); display:flex; flex-direction:column; gap:12px}
+.home p{margin:0; max-width:62ch}
+.cov{display:flex; flex-wrap:wrap; gap:6px}
+footer.note{font-size:13px; color:var(--muted)}
+
+.mods{border:1px solid var(--line); border-radius:6px; background:var(--surface); padding:10px 14px 12px; margin:0; display:flex; flex-wrap:wrap; gap:8px 22px; font-size:14px; min-width:0}
+.mods legend{font-family:var(--f-mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding:0 6px}
+.mods label{display:flex; align-items:center; gap:8px; cursor:pointer}
+.mods input{accent-color:var(--accent); width:16px; height:16px}
+.hint{margin:0; font-size:14px; color:var(--muted)}
+.seq{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px}
+.seq li{display:flex; gap:10px; align-items:stretch; min-width:0}
+.seq .n{flex:none; width:24px; font-family:var(--f-mono); font-size:12px; color:var(--muted); padding-top:10px; text-align:right}
+.seq .empty{padding:10px 12px; border:1px dashed var(--line); border-radius:5px; color:var(--muted); font-size:14px}
+.pool{display:flex; flex-direction:column; gap:6px}
+.blk{font:inherit; color:inherit; text-align:left; background:var(--surface); border:1px solid var(--line); border-radius:5px; padding:8px 12px; cursor:pointer; flex:1; min-width:0}
+.blk:hover:not(:disabled){border-color:var(--accent); background:var(--surface-2)}
+.blk:disabled{cursor:default}
+.blk pre{margin:0; font-family:var(--f-mono); font-size:13px; line-height:1.5; white-space:pre-wrap; overflow-wrap:anywhere}
+.blk.placed{border-color:var(--accent)}
+.blk.ok{background:var(--good-bg); border-color:var(--good)}
+.blk.no{background:var(--bad-bg); border-color:var(--bad)}
+.lab{font-family:var(--f-mono); font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:0}
+.miss pre.code{font-size:12.5px}
+@media (max-width:480px){
+  .card{padding:16px}
+  .topics li{grid-template-columns:90px 1fr 46px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .prog i{transition:width .25s ease}
+}
+</style>
+
+<main class="wrap">
+  <header class="mast">
+    <p class="eyebrow">Computer Programming 1 · Midterm review · Modules 1 to 4</p>
+    <h1>Midterm Quiz</h1>
+    <p class="lede">Every topic from M1 to M4, taken from your module PDFs and slides. Levels 1 to 3 get harder each time. Level 4 is separate and covers your technical (lab) activities.</p>
+    <svg class="strip" viewBox="0 0 520 46" role="img" aria-label="Small flowchart: start, input, process, output, end">
+      <g fill="var(--surface)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+        <ellipse cx="38" cy="23" rx="34" ry="15"/>
+        <polygon points="118,8 172,8 164,38 110,38"/>
+        <rect x="196" y="8" width="64" height="30"/>
+        <polygon points="298,8 352,8 344,38 290,38"/>
+        <ellipse cx="454" cy="23" rx="34" ry="15"/>
+      </g>
+      <g stroke="currentColor" stroke-width="1.5" fill="none">
+        <path d="M72 23H108M172 23H194M260 23H288M352 23H416"/>
+      </g>
+      <g fill="currentColor"><path d="M108 19l6 4-6 4zM194 19l6 4-6 4zM288 19l6 4-6 4zM416 19l6 4-6 4z"/></g>
+      <text x="38" y="26">START</text><text x="141" y="26">INPUT</text><text x="228" y="26">PROCESS</text><text x="321" y="26">OUTPUT</text><text x="454" y="26">END</text>
+    </svg>
+  </header>
+
+  <section aria-label="Choose a level">
+    <div class="levels" id="levels"></div>
+  </section>
+  <fieldset class="mods" aria-label="Modules to include">
+    <legend>Modules to include</legend>
+    <label for="mod1"><input type="checkbox" id="mod1" data-mod="M1" checked> M1 Intro to programming</label>
+    <label for="mod2"><input type="checkbox" id="mod2" data-mod="M2" checked> M2 Logic design</label>
+    <label for="mod3"><input type="checkbox" id="mod3" data-mod="M3" checked> M3 Intro to C++</label>
+    <label for="mod4"><input type="checkbox" id="mod4" data-mod="M4" checked> M4 Basic input/output</label>
+  </fieldset>
+  <div class="opts">
+    <label for="optShuffle"><input type="checkbox" id="optShuffle"> Shuffle question order</label>
+    <label for="optQuick"><input type="checkbox" id="optQuick"> Quick round (25 random questions)</label>
+  </div>
+
+  <section id="stage" aria-live="polite"></section>
+  <footer class="note">Answers follow your module wording. Typed answers accept small typos and common alternate terms; if your answer is right but marked wrong, use the “My answer is right” button. Level 4 outputs are worked out from the code in your lab sheets.</footer>
+</main>
+<script>
+const MCQ = [
+/* ---------- MODULE 1 ---------- */
+{t:"Intro", q:"Programming is described in Module 1 as:", o:["A multistep process for creating a program","The physical assembly of computer hardware","A list of error messages produced by a compiler","A method used only for drawing flowcharts"], e:"M1: Programming is a multistep process for creating a program, a way of giving computers instructions about what to do next."},
+{t:"Intro", q:"The instructions that tell a computer what it should do next are known as:", o:["Code","Diagnostics","Opcodes","Paradigms"], e:"M1: These instructions are known as code."},
+{t:"Intro", q:"Which is given as a reason why programming is important?", o:["To automate, collect, manage, calculate and analyze data and information accurately","To make monitors show higher resolutions","To remove the need for language translators","To make testing unnecessary"], e:"M1 'Why programming is important': automate, collect, manage, calculate and analyze the processing of data and information accurately."},
+{t:"Intro", q:"Programming is important for learning to innovate and create what kind of solutions for global problems?", o:["Eco-friendly solutions","Hardware-only solutions","Offline-only solutions","Cost-free solutions"], e:"M1: learning to innovate and create eco-friendly solutions for global problems. It also speeds up input and output processes in a machine."},
+{t:"Terms", q:"A computer program is:", o:["A list or sequence of instructions that tell a computer what to do","A physical device that executes instructions","The grammar of a language","A tool that removes errors"], e:"M1 Programming Terms. Everything a computer does is done by using a computer program."},
+{t:"Terms", q:"A programming language (PL) is:", o:["A type of written language that tells computers what to do in order to work","A list of error messages","A diagram made of standard symbols","A machine that translates source code"], e:"M1 Programming Terms. PLs are used to make all computer programs or software."},
+{t:"Terms", q:"Each programming language has its own grammar called:", o:["Syntax","Source code","Diagnostics","Pseudocode"], e:"M1: Syntax consists of rules governing the structure and content of the statements that should be followed."},
+{t:"Terms", q:"Who writes source code using a programming language to create programs?", o:["The programmer","The assembler","The interpreter","The end user"], e:"M1: A programmer writes source code using a programming language."},
+{t:"Terms", q:"Source code is:", o:["A well-written set of instructions and statements to develop a program","The binary form of a program","A type of error","A written record of the program cycle"], e:"M1. Source code can be written in low-level or high-level language."},
+{t:"Terms", q:"Before a computer can run it, source code must be translated to:", o:["Machine language (binary form) using a language translator","Pseudocode using a flowchart","Syntax using a compiler only","Assembly using documentation"], e:"M1: Source code must be translated to machine language (binary form) using a language translator."},
+{t:"Translators", q:"Which translator translates a program written in assembly language?", o:["Assembler","Interpreter","Compiler","Debugger"], e:"M1: Assembler translates a program written in assembly language (into machine instructions)."},
+{t:"Translators", q:"Which translator translates one statement (one line) at a time and executes it immediately after translation?", o:["Interpreter","Compiler","Assembler","Editor"], e:"M1: Interpreter."},
+{t:"Translators", q:"Which translator translates all statements at one time and provides all the error messages at once?", o:["Compiler","Interpreter","Assembler","Debugger"], e:"M1: Compiler. Its error messages are called diagnostics."},
+{t:"Translators", q:"The error messages a compiler provides all at once are called:", o:["Diagnostics","Syntax","Opcodes","Documentation"], e:"M1: diagnostics."},
+{t:"Translators", q:"Which set lists the examples of INTERPRETED languages in the module?", o:["JavaScript, Python, Ruby","C, C++, Java","Visual Basic, C, C++","Assembly, machine language, C"], e:"M1: Interpreter examples are JavaScript, Python, Ruby."},
+{t:"Translators", q:"Which set lists the examples of COMPILED languages in the module?", o:["C, C++, Java","JavaScript, Python, Ruby","Python, Java, Ruby","JavaScript, C, Ruby"], e:"M1: Compiler examples are C, C++, Java."},
+{t:"Languages", q:"A low-level language has instructions that are:", o:["Tied directly to one type of computer, and often cryptic and not human-readable","English-like and able to run on many computer types","Written only as diagrams","Always executed by an interpreter"], e:"M1 low-level vs high-level slide."},
+{t:"Languages", q:"A high-level language uses:", o:["English-like instructions and can run on a variety of computer types","Binary instructions only","Instructions tied directly to one computer type","Only symbolic opcodes"], e:"M1 low-level vs high-level slide."},
+{t:"Languages", q:"Which pair are examples of low-level languages?", o:["Machine language and assembly language","Visual Basic and C","C++ and Java","Python and Ruby"], e:"M1: Low-level examples are machine language and assembly language."},
+{t:"Languages", q:"Which are the high-level language examples listed in M1?", o:["Visual Basic, C, C++, Java","Machine language, assembly language","Assembly language, C","Machine language, Java"], e:"M1: High-level examples are Visual Basic, C, C++, Java."},
+{t:"Languages", q:"Inside a computer, all data is represented by microscopic electronic switches that are either:", o:["OFF or ON","TRUE or FALSE","START or END","HIGH-level or LOW-level"], e:"M1 machine language slide."},
+{t:"Languages", q:"Which designation is correct for the switches?", o:["OFF = 0 and ON = 1","OFF = 1 and ON = 0","OFF = 0 and ON = 2","Both OFF and ON = 1"], e:"M1: OFF switch is designated by 0, ON switch by 1."},
+{t:"Languages", q:"In the module's example, the binary 0100 0001 represents:", o:["Capital 'A'","The number 100","Lowercase 'a'","The ADD opcode"], e:"M1: 0100 0001 = capital 'A'."},
+{t:"Languages", q:"Instructions written in 0s and 1s are called:", o:["Machine language (machine code)","Assembly language","Pseudocode","High-level code"], e:"M1: Instructions written in 0s and 1s are called machine language or machine code."},
+{t:"Languages", q:"Which statement about machine language is true?", o:["Each class of computer has its own particular machine language","It is the same on every computer","It is English-like and easy to write","It needs an assembler before it can run"], e:"M1: Each class of computer has its own machine language, and writing in it is tedious."},
+{t:"Languages", q:"Assembly language is a programming language with:", o:["Symbolic names for opcodes, and decimals or labels for memory addresses","Only 0s and 1s","English-like statements and no opcodes","Rules written in plain English with no syntax"], e:"M1. Assembly programs must be translated into machine instructions using an assembler."},
+{t:"Paradigms", q:"A programming paradigm is:", o:["A style or 'way' of programming to solve a problem using some programming language","A type of language translator","A type of program error","A phase of program development"], e:"M1: It is also a way to classify programming languages based on their features."},
+{t:"Paradigms", q:"In procedure-oriented programming, the programmer concentrates on:", o:["The major tasks the program needs to perform, instructing the computer every step of the way","The objects the program can use","The hardware design","Documentation only"], e:"M1 Programming Paradigm."},
+{t:"Paradigms", q:"In object-oriented programming, the programmer focuses on:", o:["The objects the program can use to accomplish its goal","The step-by-step order of every task","Error messages","The binary form of the code"], e:"M1 Programming Paradigm. Objects can take on many different forms."},
+{t:"Paradigms", q:"A payroll program that inputs employee data, calculates gross pay, taxes and net pay, then outputs a paycheck is the module's example of:", o:["Procedure-oriented programming","Object-oriented programming","Machine language","Beta testing"], e:"M1: payroll is the example for procedure-oriented programs."},
+{t:"Paradigms", q:"A Windows-based program using check boxes, list boxes and buttons is the module's example of:", o:["Object-oriented programming","Procedure-oriented programming","Assembly programming","Pseudocode design"], e:"M1: Windows-based programs use objects such as check boxes, list boxes and buttons."},
+{t:"Paradigms", q:"In the OOP diagram, Shape is the ___ and Circle, Rectangle and Polygon are the ___.", o:["class; objects","object; classes","function; objects","object; functions"], e:"M1 diagram: Shape is the class; Circle, Rectangle and Polygon are the objects."},
+{t:"Paradigms", q:"In the procedural programming diagram, Rotate(shapeNum) and playsound(shapeNum) are:", o:["Functions","Classes","Objects","Variables"], e:"M1 diagram: they are functions."},
+{t:"PDLC", q:"The program development life cycle is:", o:["A set of steps or phases used to develop a program in any programming language","A single testing step","A type of programming paradigm","A list of translators"], e:"M1 Program Development."},
+{t:"PDLC", q:"How many phases does the program development life cycle have in the module?", o:["Five","Three","Four","Six"], e:"M1: Requirement Analysis, System Design, Coding, Testing and Debugging, Documentation and Maintenance."},
+{t:"PDLC", q:"Which is the correct order of the phases?", o:["Requirement analysis, system design, coding, testing and debugging, documentation and maintenance","System design, requirement analysis, coding, testing and debugging, documentation and maintenance","Requirement analysis, coding, system design, testing and debugging, maintenance","Coding, requirement analysis, system design, documentation, testing"], e:"M1 Program Development phases 1 to 5."},
+{t:"PDLC", q:"A requirement is:", o:["A description of what a system should do","A set of test data","A flowchart symbol","A type of translator"], e:"M1. It involves collecting information and defining the characteristics or features of the desired system."},
+{t:"PDLC", q:"Which is NOT a step of Problem Analysis?", o:["Write the source code","Determine the desired outputs","Check the feasibility of implementing the program","Document the analysis"], e:"Problem Analysis: define the problem and users, determine outputs, determine inputs, determine processes, check feasibility, document the analysis. Writing code is the coding phase."},
+{t:"PDLC", q:"In Problem Analysis, which step comes right after 'Determine the desired outputs'?", o:["Determine the input needed to achieve the desired outputs","Determine the processes involved","Check the feasibility","Document the analysis"], e:"Order: define problem and users, outputs, inputs, processes, feasibility, document."},
+{t:"PDLC", q:"The program design (system design) process describes:", o:["The algorithm for the solution of the problem","The final user manual","The errors found in testing","The binary form of the code"], e:"M1: The program design process describes the algorithm for the solution of the problem."},
+{t:"PDLC", q:"In M1, an algorithm is:", o:["The step-by-step sequence of instructions that describe how data will be processed to produce the desired output","The translator for assembly language","The written record of the program","A type of programming error"], e:"M1 Program Development."},
+{t:"PDLC", q:"To formulate the algorithm, a programmer may choose between:", o:["Pseudocode or flowcharts","Compilers or interpreters","Alpha or beta testing","Classes or functions"], e:"M1."},
+{t:"PDLC", q:"M1 defines pseudocode as:", o:["An algorithm written in normal human-language statements to describe the logic and processing flow","A diagram with connecting lines and arrows","The binary form of a program","A list of diagnostics"], e:"M1 Program Development."},
+{t:"PDLC", q:"M1 defines a flowchart as:", o:["A visual representation of the sequence of steps and decisions needed to perform a process","An algorithm in human-language statements","A written description of the program","A set of error messages"], e:"M1. Each step is noted within a diagram shape, linked by connecting lines and directional arrows."},
+{t:"PDLC", q:"The steps of the coding (construction) phase are:", o:["Select the appropriate programming language and follow the syntax","Perform desk checking and debug","Define the problem and the users","Prepare documentation and maintain"], e:"M1 Coding: the actual writing of the program based on the design specifications."},
+{t:"Testing", q:"Alpha testing consists of:", o:["Desk checking and debugging","Real users running the program in a real environment","Writing documentation","Choosing a programming language"], e:"M1: desk checking and debugging are called alpha testing, then real data is run."},
+{t:"Testing", q:"Beta testing is performed by:", o:["Real users of the software application in a real environment","The programmer using desk checking","The compiler","The documentation team only"], e:"M1."},
+{t:"Testing", q:"What are the three steps of Testing and Debugging, in order?", o:["Perform desk checking, debug the program, run real data","Debug the program, run real data, perform desk checking","Run real data, perform desk checking, debug the program","Perform desk checking, run real data, debug the program"], e:"M1."},
+{t:"Testing", q:"Desk checking is:", o:["Manually testing the solution design to make sure it is free of errors and the logic works","Running real data","Removing syntax errors with a compiler","A written description of the program"], e:"M1."},
+{t:"Testing", q:"Debugging means:", o:["Detecting, locating and removing all errors in a computer program","Manually reviewing the solution design","Translating source code","Collecting requirements"], e:"M1."},
+{t:"Testing", q:"The most common error, caused by incorrect use of programming language statements, is the:", o:["Syntax error","Run-time error","Logical error","Design error"], e:"M1 Types of Errors."},
+{t:"Testing", q:"A software error that occurs while a program is being executed is a:", o:["Run-time error","Syntax error","Logical error","Documentation error"], e:"M1 Types of Errors."},
+{t:"Testing", q:"A mistake in the source code that results in incorrect or unexpected behavior is a:", o:["Logical error","Syntax error","Run-time error","Diagnostic"], e:"M1 Types of Errors."},
+{t:"Testing", q:"Documentation is:", o:["A written detailed description of the programming cycle and specific facts about the program, including instructions on its use and maintenance","Any activity that keeps programs up to date","Testing by real users","The algorithm written in pseudocode"], e:"M1."},
+{t:"Testing", q:"Maintenance is:", o:["Any activity designed to keep programs error-free, up-to-date and in good working condition","A written description of the program","Manually checking the design","The step where the algorithm is formulated"], e:"M1."},
+
+/* ---------- MODULE 2 ---------- */
+{t:"Algorithm", q:"In M2, an algorithm is:", o:["A procedure or formula for solving a problem, based on conducting a sequence of specified actions","A diagram made only of symbols","A type of translator","A language with no rules"], e:"M2 Algorithm: step-by-step method of solving a problem."},
+{t:"Algorithm", q:"An algorithm can be expressed using:", o:["Pseudocode or flowchart","Machine language only","IPO charts only","Compilers or interpreters"], e:"M2."},
+{t:"Algorithm", q:"In an IPO chart, the algorithm is written in the:", o:["Processing column","Input column","Output column","Title row"], e:"M2: Write the algorithm in the Processing column of the Input-Process-Output (IPO) chart."},
+{t:"Algorithm", q:"IPO stands for:", o:["Input-Process-Output","Instruction-Program-Output","Input-Program-Operation","Initialize-Process-Output"], e:"M2."},
+{t:"Algorithm", q:"Each instruction in an algorithm should start with a:", o:["Verb","Noun","Number","Symbol"], e:"M2: Each instruction describes an action the computer needs to take, so it starts with a verb."},
+{t:"Algorithm", q:"Most algorithms begin with an instruction to:", o:["Enter the input items into the computer","Display the output","Store the output in a file","Print the results"], e:"M2. Next come the processing instructions, usually calculations, and most algorithms end with display, print or store."},
+{t:"Algorithm", q:"Display, print and store refer to ___, respectively.", o:["The computer screen, the printer, and a file on a disk","The printer, the screen, and a file on a disk","A file on a disk, the screen, and the printer","The screen, a file on a disk, and the printer"], e:"M2."},
+{t:"Pseudocode", q:"Pseudocode is called 'false code' because:", o:["It has no syntax like a programming language, so it cannot be compiled or interpreted by the computer","It always contains mistakes","It is written in binary","It only works in C++"], e:"M2."},
+{t:"Pseudocode", q:"Which best describes pseudocode?", o:["Annotations and informative text in plain English that is not standardized","A standard language every programmer writes identically","Code that compilers run directly","A diagram of symbols"], e:"M2: Every programmer has his or her own version, with some similarities."},
+{t:"Pseudocode", q:"In pseudocode, keywords are written:", o:["Fully in uppercase","Fully in lowercase","In camelCase","In Title Case"], e:"M2."},
+{t:"Pseudocode", q:"When writing pseudocode, the order of execution is assumed to be:", o:["From top to bottom","From bottom to top","Right to left","Random"], e:"M2. This changes with control structures, functions and exception handling."},
+{t:"Pseudocode", q:"Which group contains only keywords for getting input?", o:["INPUT, ENTER, READ, GET","PRINT, OUTPUT, DISPLAY, SHOW","COMPUTE, CALCULATE, DETERMINE","SET, INIT, BUMP"], e:"M2: INPUT, ENTER, READ / GET."},
+{t:"Pseudocode", q:"Which group contains only keywords for showing output?", o:["PRINT, OUTPUT, DISPLAY, SHOW","INPUT, ENTER, READ, GET","COMPUTE, CALCULATE, SET","INCREMENT, DECREMENT, BUMP"], e:"M2: PRINT, OUTPUT, DISPLAY, SHOW."},
+{t:"Pseudocode", q:"COMPUTE, CALCULATE and DETERMINE are used to:", o:["Calculate the result of an expression","Retrieve data from the user","Initialize values","Repeat instructions"], e:"M2."},
+{t:"Pseudocode", q:"SET and INIT are used to:", o:["Initialize values","Increase a variable","Show output","Start a loop"], e:"M2."},
+{t:"Pseudocode", q:"INCREMENT (or BUMP) ___ the value of a variable, while DECREMENT ___ it.", o:["increases; reduces","reduces; increases","initializes; displays","displays; initializes"], e:"M2."},
+{t:"Pseudocode", q:"Which symbols are assignment operators in pseudocode?", o:["← and :=","= and ≠","and, or","+ and −"], e:"M2: c ← 2πr and c := 2πr."},
+{t:"Pseudocode", q:"Which list contains only comparison (relational) operators?", o:["=, ≠, <, >, ≤, ≥","+, −, ×, /, mod","and, or","←, :="], e:"M2."},
+{t:"Pseudocode", q:"Which are the logical operators?", o:["and, or","+, −","<, >","←, :="], e:"M2: e.g. m > n and s < t."},
+{t:"Pseudocode", q:"Which list contains arithmetic operators?", o:["+, −, ×, /, mod","=, ≠, <, >","and, or","←, :="], e:"M2."},
+{t:"Control", q:"Which conditional structure uses the keyword OTHERS?", o:["CASE – OTHERS – ENDCASE","IF – THEN – ENDIF","IF – ELSE IF – ELSE – ENDIF","WHILE – ENDWHILE"], e:"M2 conditional keywords."},
+{t:"Control", q:"To iterate means to:", o:["Repeat a set of instructions in order to generate a sequence of outcomes","Choose between two paths","Initialize a value","Translate code"], e:"M2 iteration/looping."},
+{t:"Control", q:"Which loop evaluates its condition AFTER executing the sequence?", o:["DO … WHILE","WHILE … ENDWHILE","FOR … ENDFOR","IF … ENDIF"], e:"M2: DO sequence WHILE condition."},
+{t:"Control", q:"In the tip problem (Problem Specification 1), the tip is computed as:", o:["TotalBill × TipPercentage","TotalBill + TipPercentage","TotalBill ÷ TipPercentage","TotalBill − TipPercentage"], e:"M2: COMPUTE tip := TotalBill x TipPercentage."},
+{t:"Control", q:"Which structure did the module use to find the highest and lowest of two integers?", o:["IF – ELSE","CASE","FOR","DO – WHILE"], e:"M2 Problem Specification 2: IF firstNumber > secondNumber THEN … ELSE … ENDIF."},
+{t:"Control", q:"In the CASE example (letters A to C), what is displayed if the user enters D?", o:["Input a valid letter (A, B, C)","D is for date","Nothing is displayed","A is for apple"], e:"M2: the OTHERS branch."},
+{t:"Control", q:"In the WHILE-loop sum example, which starting values are set?", o:["numberCounter = 0 and sum = 0","numberCounter = 1 and sum = 1","numberCounter = 3 and sum = 0","numberCounter = 0 and sum = 3"], e:"M2 Problem Specification 4: SET numberCounter = 0, sum = 0; WHILE numberCounter < 3."},
+{t:"Flowchart", q:"A flowchart is:", o:["A pictorial representation of an ordered, step-by-step solution to a problem","A list of uppercase keywords","A table with Input, Processing and Output columns","A written description of a program"], e:"M2 Flowchart overview."},
+{t:"Flowchart", q:"A program flowchart is:", o:["A diagram that uses standard graphic symbols to represent the sequence of coded instructions fed into a computer so it can perform specified logical and arithmetical operations","A list of all program errors","A chart of Input, Process and Output columns","A table of keywords"], e:"M2."},
+{t:"Flowchart", sym:"hex", q:"What does this flowchart symbol mean?", o:["Initialization","Decision","Terminal","Process"], e:"Hexagon = Initialization."},
+{t:"Flowchart", sym:"dia", q:"What does this flowchart symbol mean?", o:["Decision","Initialization","Input / Output","On-page connector"], e:"Diamond = Decision."},
+{t:"Flowchart", sym:"oval", q:"What does this flowchart symbol mean?", o:["Terminal","Process","Off-page connector","Initialization"], e:"Oval = Terminal (START and END)."},
+{t:"Flowchart", sym:"rect", q:"What does this flowchart symbol mean?", o:["Process","Terminal","Decision","Input / Output"], e:"Rectangle = Process."},
+{t:"Flowchart", sym:"para", q:"What does this flowchart symbol mean?", o:["Input / Output","Process","Initialization","Flow line"], e:"Parallelogram = Input / Output."},
+{t:"Flowchart", sym:"circ", q:"What does this flowchart symbol mean?", o:["On-page connector","Off-page connector","Terminal","Initialization"], e:"Circle = On-page connector."},
+{t:"Flowchart", sym:"pent", q:"What does this flowchart symbol mean?", o:["Off-page connector","On-page connector","Decision","Process"], e:"Pentagon with a pointed bottom = Off-page connector."},
+{t:"Flowchart", sym:"flow", q:"What do these arrows represent?", o:["Flow lines","Connectors","Terminals","Decisions"], e:"Arrows = Flow lines."},
+{t:"Flowchart", q:"Which three structures can flowcharts express?", o:["Sequence, selection/conditional, loop","Input, process, output","Assignment, comparison, logical","Start, stop, connector"], e:"M2."},
+{t:"Flowchart", q:"Which is one of the flowchart rules in M2?", o:["Only one flow line should enter a decision symbol, but two or three leave it, one for each possible answer","Two flow lines should leave every process symbol","Only one flow line should leave a decision symbol","Flow lines should cross each other to save space"], e:"M2: Only one flow line comes out of a process symbol."},
+{t:"Flowchart", q:"The usual direction of flow in a flowchart is:", o:["Left to right or top to bottom","Right to left or bottom to top","Bottom to top only","Any direction"], e:"M2."},
+{t:"Flowchart", q:"When a flowchart becomes complex, it is better to:", o:["Use connector symbols to reduce the number of flow lines","Remove the decision symbols","Rewrite it as source code","Add intersecting flow lines"], e:"M2. Avoid intersecting flow lines for better communication."},
+{t:"C++ code", q:"In the 'average of two integers' source code, #include<iostream> is labeled as the:", o:["Pre-processor","Main function","Variable declaration","Output"], e:"M2 Pseudocode, Flowchart and Source Code slide."},
+{t:"C++ code", q:"In that source code, int x, y; is labeled as:", o:["Variable declarations","Input","Computation (Process)","Pre-processor"], e:"M2."},
+{t:"C++ code", q:"Which statement performs input in the sample C++ code?", o:["cin >> x >> y;","cout << \"Enter two integers: \";","average = (x + y) / 2;","return 0;"], e:"M2: cin is the Input; cout is the Output."},
+{t:"C++ code", q:"average = (x + y) / 2; is labeled in the sample code as:", o:["Computation (Process)","Input","Output","Start"], e:"M2."}
+];
+const TF = [
+/* ---------- MODULE 1 ---------- */
+{t:"Intro", q:"Programming is a multistep process for creating a program, and the instructions it gives a computer are known as code.", a:true, e:"M1 definition."},
+{t:"Intro", q:"One reason programming matters is that it speeds up the input and output processes in a machine.", a:true, e:"M1 Why programming is important."},
+{t:"Terms", q:"Syntax is the set of logical mistakes in a program that produce unexpected behavior.", a:false, e:"Syntax is the grammar of a programming language (rules for structure and content of statements). Unexpected behavior from a source code mistake is a logical error."},
+{t:"Terms", q:"Source code can be written in either a low-level or a high-level language.", a:true, e:"M1."},
+{t:"Terms", q:"A programming language is used to make all computer programs or software, and everything a computer does is done by using a computer program.", a:true, e:"M1 Programming Terms."},
+{t:"Translators", q:"A compiler translates one statement at a time and executes it immediately, while an interpreter translates all statements at once.", a:false, e:"Reversed. The interpreter works one statement at a time; the compiler translates all statements at once and gives all diagnostics at once."},
+{t:"Translators", q:"JavaScript, Python and Ruby are the module's examples of languages handled by an interpreter.", a:true, e:"M1."},
+{t:"Translators", q:"C, C++ and Java are the module's examples of languages handled by a compiler.", a:true, e:"M1."},
+{t:"Translators", q:"An assembler translates C++ source code into machine language.", a:false, e:"An assembler translates programs written in assembly language."},
+{t:"Translators", q:"A compiler provides its error messages, called diagnostics, all at once.", a:true, e:"M1."},
+{t:"Languages", q:"Machine language and assembly language are both examples of low-level languages.", a:true, e:"M1."},
+{t:"Languages", q:"Visual Basic is one of the module's examples of a low-level language.", a:false, e:"Visual Basic, C, C++ and Java are the high-level examples."},
+{t:"Languages", q:"High-level languages use instructions tied directly to one type of computer.", a:false, e:"That describes low-level languages. High-level languages are English-like and run on a variety of computer types."},
+{t:"Languages", q:"Each class of computer has its own particular machine language.", a:true, e:"M1."},
+{t:"Languages", q:"In machine language, an ON switch is designated by 0 and an OFF switch by 1.", a:false, e:"OFF = 0 and ON = 1."},
+{t:"Languages", q:"The binary pattern 0100 0001 represents the capital letter 'A' in the module's example.", a:true, e:"M1."},
+{t:"Languages", q:"Assembly language uses only 0s and 1s, so it does not need a translator.", a:false, e:"Assembly uses symbolic names for opcodes and labels or decimals for memory addresses, and it must be translated by an assembler."},
+{t:"Paradigms", q:"In procedure-oriented programming, the programmer must instruct the computer every step of the way, from the start of the task to its completion.", a:true, e:"M1."},
+{t:"Paradigms", q:"In the OOP diagram, Circle is the class and Shape is one of its objects.", a:false, e:"Shape is the class; Circle, Rectangle and Polygon are the objects."},
+{t:"Paradigms", q:"A programming paradigm can be used to classify programming languages based on their features.", a:true, e:"M1."},
+{t:"Paradigms", q:"Rotate(shapeNum) and playsound(shapeNum) in the procedural diagram are objects.", a:false, e:"They are functions."},
+{t:"PDLC", q:"The program development life cycle in M1 has four phases.", a:false, e:"It has five: requirement analysis, system design, coding, testing and debugging, documentation and maintenance."},
+{t:"PDLC", q:"Testing and Debugging is the third phase of the program development life cycle.", a:false, e:"It is the fourth. Coding is the third."},
+{t:"PDLC", q:"In Problem Analysis, the desired outputs are determined before the inputs.", a:true, e:"M1 order: define problem and users, outputs, inputs, processes, feasibility, document."},
+{t:"PDLC", q:"In Problem Analysis, the feasibility check comes before determining the processes involved.", a:false, e:"Feasibility comes after determining the processes and just before documenting the analysis."},
+{t:"PDLC", q:"Pseudocode and flowcharts are tools used in the coding phase to write the actual program.", a:false, e:"They are used to formulate the algorithm in the system design phase."},
+{t:"PDLC", q:"The coding phase involves selecting the appropriate programming language and following its syntax.", a:true, e:"M1."},
+{t:"PDLC", q:"A requirement is a description of what a system should do.", a:true, e:"M1."},
+{t:"Testing", q:"Alpha testing includes desk checking and debugging.", a:true, e:"M1."},
+{t:"Testing", q:"Beta testing is done by the programmer through desk checking.", a:false, e:"Beta testing is performed by real users of the software in a real environment."},
+{t:"Testing", q:"The three steps of Testing and Debugging are desk-checking, debugging the program, and running real data.", a:true, e:"M1."},
+{t:"Testing", q:"A logical error prevents a program from being translated because it breaks language rules.", a:false, e:"That describes a syntax error. A logical error is a source code mistake that gives incorrect or unexpected behavior."},
+{t:"Testing", q:"A run-time error is a software error that occurs while the program is being executed.", a:true, e:"M1."},
+{t:"Testing", q:"The syntax error is described as the most common error.", a:true, e:"M1."},
+{t:"Testing", q:"Maintenance is the written detailed description of the programming cycle.", a:false, e:"That is documentation. Maintenance is any activity that keeps programs error-free, up-to-date and in good working condition."},
+{t:"Testing", q:"Documentation also includes instructions on the use and maintenance of the program.", a:true, e:"M1."},
+{t:"Testing", q:"Desk checking means detecting, locating and removing all errors in a program.", a:false, e:"That is debugging. Desk checking is manually testing the solution design to see that it is error-free and the logic works."},
+
+/* ---------- MODULE 2 ---------- */
+{t:"Algorithm", q:"Each instruction in an algorithm should start with a verb.", a:true, e:"M2."},
+{t:"Algorithm", q:"The algorithm is written in the Input column of the IPO chart.", a:false, e:"It is written in the Processing column."},
+{t:"Algorithm", q:"Most algorithms end with an instruction to display, print or store the output items.", a:true, e:"M2."},
+{t:"Algorithm", q:"Display, print and store refer to the printer, the screen and a file on a disk, respectively.", a:false, e:"Display = screen, print = printer, store = a file on a disk."},
+{t:"Pseudocode", q:"Pseudocode cannot be compiled or interpreted because it has no syntax like any programming language.", a:true, e:"M2: that is why it is called false code."},
+{t:"Pseudocode", q:"Pseudocode is standardized, so every programmer writes it the same way.", a:false, e:"It is not standardized. Every programmer has a version, with similarities."},
+{t:"Pseudocode", q:"Pseudocode keywords are written fully in uppercase.", a:true, e:"M2."},
+{t:"Pseudocode", q:"READ and GET are output keywords.", a:false, e:"INPUT, ENTER and READ / GET retrieve data. PRINT, OUTPUT, DISPLAY and SHOW are the output keywords."},
+{t:"Pseudocode", q:"INCREMENT and BUMP both increase the value of a variable.", a:true, e:"M2."},
+{t:"Pseudocode", q:"DECREMENT is used to initialize values.", a:false, e:"SET and INIT initialize values. DECREMENT reduces the value of a variable."},
+{t:"Pseudocode", q:"The symbols ← and := are both assignment operators.", a:true, e:"M2."},
+{t:"Pseudocode", q:"The symbol ≠ is a logical operator.", a:false, e:"≠ is a comparison (relational) operator. The logical operators are and, or."},
+{t:"Pseudocode", q:"Statements are assumed to run from top to bottom, and this changes with control structures, functions and exception handling.", a:true, e:"M2."},
+{t:"Control", q:"A CASE structure is closed with ENDIF.", a:false, e:"CASE – OTHERS – ENDCASE. ENDIF closes IF structures."},
+{t:"Control", q:"In a DO … WHILE loop, the condition is evaluated after the sequence runs, so the sequence executes at least once.", a:true, e:"M2: DO sequence WHILE condition."},
+{t:"Control", q:"A WHILE loop is closed with ENDFOR.", a:false, e:"WHILE … ENDWHILE. ENDFOR closes a FOR loop."},
+{t:"Control", q:"A FOR loop specifies iteration bounds, for example FOR num = 1 TO 10.", a:true, e:"M2."},
+{t:"Control", q:"In the CASE example, entering a lowercase 'b' prints the same output as an uppercase 'B'.", a:true, e:"M2: 'B or b: PRINT \"B is for banana\"'."},
+{t:"Control", q:"In the DO … WHILE sum example, the loop is controlled by 'WHILE numberCounter < 3' after the body.", a:true, e:"M2 Problem Specification 6."},
+{t:"Flowchart", q:"A flowchart is a pictorial representation of an ordered, step-by-step solution to a problem.", a:true, e:"M2."},
+{t:"Flowchart", q:"The diamond is the Input / Output symbol.", a:false, e:"Diamond = Decision. Parallelogram = Input / Output."},
+{t:"Flowchart", q:"The oval is the Process symbol.", a:false, e:"Oval = Terminal. Rectangle = Process."},
+{t:"Flowchart", q:"The hexagon represents Initialization.", a:true, e:"M2."},
+{t:"Flowchart", q:"Only one flow line should leave a decision symbol, but two or three may enter it.", a:false, e:"Reversed: only one flow line enters a decision symbol, and two or three leave it, one for each possible answer."},
+{t:"Flowchart", q:"Only one flow line should come out of a process symbol.", a:true, e:"M2."},
+{t:"Flowchart", q:"Flowcharts can express only sequence and loop structures.", a:false, e:"They can express sequence, selection/conditional and loop."},
+{t:"Flowchart", q:"A flowchart should have a logical start and finish, and its flow usually goes left to right or top to bottom.", a:true, e:"M2."},
+{t:"Flowchart", q:"Crossing flow lines is encouraged because it keeps the flowchart compact.", a:false, e:"Avoid intersecting flow lines. Use connector symbols for complex flowcharts."},
+{t:"Flowchart", q:"In the flowchart that displays 1 to 10, the decision 'm<=10?' becomes FALSE when m equals 10.", a:false, e:"At m = 10, m<=10 is still TRUE, so 10 is displayed. It becomes FALSE when m = 11."},
+{t:"Flowchart", q:"In the positive/negative/zero flowchart, N is reported as ZERO only when both 'N>0?' and 'N<0?' are FALSE.", a:true, e:"M2 flowchart example."},
+{t:"C++ code", q:"In the sample C++ code, cin is used for input and cout is used for output.", a:true, e:"M2."},
+{t:"C++ code", q:"In the sample code, #include<iostream> is labeled as the variable declarations.", a:false, e:"It is labeled Pre-processor. int x, y; is the variable declarations."}
+];
+const WHILE_CODE = "SET numberCounter = 0, sum = 0\nWHILE numberCounter < 3\n  INPUT number\n  CALCULATE sum := sum + number\n  INCREMENT numberCounter\nENDWHILE\nPRINT sum";
+const DO_CODE = "SET numberCounter = 3, sum = 0\nDO\n  INPUT number\n  CALCULATE sum := sum + number\n  INCREMENT numberCounter\nWHILE numberCounter < 3\nPRINT sum";
+const IDQ = [
+/* ---------- MODULE 1 ---------- */
+{t:"Intro", q:"What is the multistep process for creating a program, a way of giving computers instructions about what they should do next?", a:["programming","computer programming"], d:"Programming (computer programming)"},
+{t:"Intro", q:"The instructions given to a computer are collectively known as ____.", a:["code"], d:"Code"},
+{t:"Terms", q:"What is a list or sequence of instructions that tells a computer what to do?", a:["computer program","program"], d:"Computer program"},
+{t:"Terms", q:"What is the type of written language that tells computers what to do in order to work?", a:["programming language","pl"], d:"Programming language (PL)"},
+{t:"Terms", q:"What is the grammar of a programming language: the rules governing the structure and content of its statements?", a:["syntax"], d:"Syntax"},
+{t:"Terms", q:"What is the well-written set of instructions and statements a programmer writes to develop a program?", a:["source code"], d:"Source code"},
+{t:"Terms", q:"Who writes source code using a programming language to create programs?", a:["programmer","the programmer"], d:"The programmer"},
+{t:"Terms", q:"Source code must be translated into what form (binary) using a language translator?", a:["machine language","machine code","binary"], d:"Machine language (machine code, binary form)"},
+{t:"Translators", q:"What translator converts a program written in assembly language into machine instructions?", a:["assembler"], d:"Assembler"},
+{t:"Translators", q:"What translator translates one statement at a time and executes it immediately after translation?", a:["interpreter"], d:"Interpreter"},
+{t:"Translators", q:"What translator translates all statements at one time?", a:["compiler"], d:"Compiler"},
+{t:"Translators", q:"What are the error messages a compiler provides all at once called?", a:["diagnostics","diagnostic"], d:"Diagnostics"},
+{t:"Translators", q:"Python, Ruby and JavaScript use what kind of translator?", a:["interpreter"], d:"Interpreter"},
+{t:"Translators", q:"C, C++ and Java use what kind of translator?", a:["compiler"], d:"Compiler"},
+{t:"Languages", q:"What language type has instructions tied directly to one type of computer, often cryptic and not human-readable?", a:["low level language","low level"], d:"Low-level language"},
+{t:"Languages", q:"What language type uses English-like instructions and can run on a variety of computer types?", a:["high level language","high level"], d:"High-level language"},
+{t:"Languages", q:"Instructions written in 0s and 1s are called ____ (give one of the two terms).", a:["machine language","machine code"], d:"Machine language (or machine code)"},
+{t:"Languages", q:"Which digit designates an OFF switch?", a:["0","zero"], d:"0"},
+{t:"Languages", q:"Which digit designates an ON switch?", a:["1","one"], d:"1"},
+{t:"Languages", q:"The binary 0100 0001 stands for which capital letter?", a:["a","capital a"], d:"A"},
+{t:"Languages", q:"What programming language has symbolic names for opcodes and decimals or labels for memory addresses?", a:["assembly language","assembly"], d:"Assembly language"},
+{t:"Paradigms", q:"What do you call a style or 'way' of programming to solve problems, also used to classify languages by their features?", a:["programming paradigm","paradigm"], d:"Programming paradigm"},
+{t:"Paradigms", q:"Which paradigm has the programmer concentrate on the major tasks and instruct the computer every step of the way (the payroll example)?", a:["procedure oriented programming","procedure oriented","procedural programming","procedural"], d:"Procedure-oriented (procedural) programming"},
+{t:"Paradigms", q:"Which paradigm has the programmer focus on objects such as check boxes, list boxes and buttons?", a:["object oriented programming","object oriented","oop"], d:"Object-oriented programming (OOP)"},
+{t:"Paradigms", q:"In the OOP diagram, what are Circle, Rectangle and Polygon in relation to the class Shape?", a:["objects","object"], d:"Objects"},
+{t:"Paradigms", q:"In the procedural diagram, what are Rotate(shapeNum) and playsound(shapeNum)?", a:["functions","function"], d:"Functions"},
+{t:"PDLC", q:"What is the set of five phases used to develop a program in any programming language?", a:["program development life cycle","pdlc","program development cycle"], d:"Program development life cycle (PDLC)"},
+{t:"PDLC", q:"Name phase 1 of the program development life cycle.", a:["requirement analysis"], d:"Requirement analysis"},
+{t:"PDLC", q:"Name phase 2 of the program development life cycle.", a:["system design"], d:"System design"},
+{t:"PDLC", q:"Name phase 3 of the program development life cycle.", a:["coding","writing the program","coding or writing the program"], d:"Coding (or writing the program)"},
+{t:"PDLC", q:"Name phase 4 of the program development life cycle.", a:["testing and debugging"], d:"Testing and debugging"},
+{t:"PDLC", q:"Name phase 5 of the program development life cycle.", a:["documentation and maintenance"], d:"Documentation and maintenance"},
+{t:"PDLC", q:"What is the description of what a system should do called?", a:["requirement","requirements"], d:"Requirement"},
+{t:"PDLC", q:"During system design, what is the step-by-step sequence of instructions describing how data will be processed to produce the desired output?", a:["algorithm"], d:"Algorithm"},
+{t:"PDLC", q:"A flowchart is one tool for formulating an algorithm. Which written, human-language tool is the other?", a:["pseudocode"], d:"Pseudocode"},
+{t:"PDLC", q:"Name the Problem Analysis step that comes right before 'Document the analysis'.", a:["check the feasibility of implementing the program","check feasibility","feasibility check","check the feasibility"], d:"Check the feasibility of implementing the program"},
+{t:"Testing", q:"What is manually testing the solution design to make sure it is free of errors and the logic works?", a:["desk checking","desk check"], d:"Desk checking"},
+{t:"Testing", q:"What means detecting, locating and removing all errors in a computer program?", a:["debugging"], d:"Debugging"},
+{t:"Testing", q:"Which testing consists of desk checking and debugging?", a:["alpha testing","alpha"], d:"Alpha testing"},
+{t:"Testing", q:"Which testing is performed by real users of the software in a real environment?", a:["beta testing","beta"], d:"Beta testing"},
+{t:"Testing", q:"Testing and Debugging has three steps: desk checking, debugging, and ____.", a:["run real data","running real data","real data"], d:"Run real data"},
+{t:"Testing", q:"Which is the most common error, caused by incorrect use of programming language statements?", a:["syntax error"], d:"Syntax error"},
+{t:"Testing", q:"A program runs without crashing but computes net pay as gross pay PLUS deductions. What type of error is this?", a:["logical error","logic error"], d:"Logical error"},
+{t:"Testing", q:"A program starts normally but stops with an error while it is being executed because it divides by zero. What type of error is this?", a:["run time error","runtime error"], d:"Run-time error"},
+{t:"Testing", q:"What is the written detailed description of the programming cycle and specific facts about the program, including instructions on its use and maintenance?", a:["documentation"], d:"Documentation"},
+{t:"Testing", q:"What is any activity designed to keep programs error-free, up-to-date and in good working condition?", a:["maintenance"], d:"Maintenance"},
+
+/* ---------- MODULE 2 ---------- */
+{t:"Algorithm", q:"What is a procedure or formula for solving a problem, based on conducting a sequence of specified actions?", a:["algorithm"], d:"Algorithm"},
+{t:"Algorithm", q:"In an IPO chart, which column holds the algorithm?", a:["processing","process","processing column"], d:"Processing column"},
+{t:"Algorithm", q:"What does IPO stand for?", a:["input process output"], d:"Input-Process-Output"},
+{t:"Algorithm", q:"Each instruction in an algorithm should start with what part of speech?", a:["verb","a verb"], d:"A verb"},
+{t:"Algorithm", q:"When an algorithm says 'store' the output, where is it stored?", a:["file on a disk","a file on a disk","file","disk"], d:"A file on a disk"},
+{t:"Pseudocode", q:"What is pseudocode also called, because it has no syntax like any programming language?", a:["false code"], d:"False code"},
+{t:"Pseudocode", q:"In what letter case are pseudocode keywords written?", a:["uppercase","upper case","all caps","capital letters"], d:"Fully uppercase"},
+{t:"Pseudocode", q:"In what order are pseudocode statements assumed to execute?", a:["top to bottom"], d:"Top to bottom"},
+{t:"Pseudocode", q:"Name the pseudocode keyword that marks the start of your pseudocode.", a:["start"], d:"START"},
+{t:"Pseudocode", q:"SET initializes values. What is the other keyword listed with it for the same purpose?", a:["init"], d:"INIT"},
+{t:"Pseudocode", q:"What keyword is the synonym of INCREMENT, meaning to increase the value of a variable?", a:["bump"], d:"BUMP"},
+{t:"Pseudocode", q:"Which keyword reduces the value of a variable?", a:["decrement"], d:"DECREMENT"},
+{t:"Pseudocode", q:"Type the assignment operator that is written with a colon and an equals sign.", a:[":="], d:":="},
+{t:"Pseudocode", q:"What is the name of the relational operator ≠?", a:["not equal","not equal to","!="], d:"Not equal"},
+{t:"Pseudocode", q:"'and' and 'or' belong to which operator category?", a:["logical","logical operator","logical operators"], d:"Logical operators"},
+{t:"Control", q:"What pseudocode keyword closes an IF structure?", a:["endif"], d:"ENDIF"},
+{t:"Control", q:"What pseudocode keyword closes a CASE structure?", a:["endcase"], d:"ENDCASE"},
+{t:"Control", q:"What keyword in a CASE structure covers every value that matches none of the listed cases?", a:["others"], d:"OTHERS"},
+{t:"Control", q:"What pseudocode keyword closes a WHILE loop?", a:["endwhile"], d:"ENDWHILE"},
+{t:"Control", q:"Which loop runs its sequence first and tests the condition at the end?", a:["do while","do while loop"], d:"DO … WHILE"},
+{t:"Control", q:"To ____ is to repeat a set of instructions in order to generate a sequence of outcomes.", a:["iterate"], d:"Iterate"},
+{t:"Control", code:WHILE_CODE, q:"The user enters 4, then 5, then 6. What is printed?", a:["15"], d:"15", e:"The loop runs 3 times (counter 0, 1, 2): 4 + 5 + 6 = 15."},
+{t:"Control", code:DO_CODE, q:"numberCounter starts at 3 and the user enters 7 once. What is printed?", a:["7"], d:"7", e:"DO … WHILE runs the body once before testing. After INCREMENT the counter is 4, 4 < 3 is false, so the loop ends and sum = 7."},
+{t:"Control", code:"ENTER firstNumber, secondNumber\nIF firstNumber > secondNumber\n  THEN\n    DISPLAY firstNumber(highest), secondNumber(lowest)\n  ELSE\n    DISPLAY secondNumber(highest), firstNumber(lowest)\nENDIF", q:"firstNumber is 3 and secondNumber is 9. Which number is displayed as the highest?", a:["9","secondnumber","second number"], d:"9 (secondNumber)", e:"3 > 9 is false, so the ELSE branch runs."},
+{t:"Control", code:"INPUT letter\nCASE letter of\n  A or a: PRINT \"A is for apple\"\n  B or b: PRINT \"B is for banana\"\n  C or c: PRINT \"C is for cranberry\"\nOTHERS\n  PRINT \"Input a valid letter (A, B, C)\"\nENDCASE", q:"The user enters c. Which fruit is printed?", a:["cranberry","c is for cranberry"], d:"C is for cranberry"},
+{t:"Control", code:"ENTER TotalBill, TipPercentage\nCOMPUTE tip := TotalBill x TipPercentage\nDISPLAY tip", q:"TotalBill is 500 and TipPercentage is 0.10. What does it display?", a:["50","50.0"], d:"50"},
+{t:"Control", code:"ENTER x, y\nCOMPUTE average =: (x + y) / 2\nDISPLAY average", q:"x is 6 and y is 10. What does it display?", a:["8"], d:"8"},
+{t:"Flowchart", q:"What is the pictorial representation of an ordered, step-by-step solution to a problem?", a:["flowchart","flow chart"], d:"Flowchart"},
+{t:"Flowchart", sym:"hex", q:"Name this flowchart symbol's meaning.", a:["initialization","initialisation"], d:"Initialization"},
+{t:"Flowchart", sym:"dia", q:"Name this flowchart symbol's meaning.", a:["decision"], d:"Decision"},
+{t:"Flowchart", sym:"oval", q:"Name this flowchart symbol's meaning.", a:["terminal"], d:"Terminal (START / END)"},
+{t:"Flowchart", sym:"rect", q:"Name this flowchart symbol's meaning.", a:["process"], d:"Process"},
+{t:"Flowchart", sym:"para", q:"Name this flowchart symbol's meaning.", a:["input output","input / output","input/output","i/o"], d:"Input / Output"},
+{t:"Flowchart", sym:"flow", q:"Name what these arrows represent.", a:["flow lines","flow line","flowlines"], d:"Flow lines"},
+{t:"Flowchart", sym:"circ", q:"Name this flowchart symbol's meaning.", a:["on page connector","onpage connector"], d:"On-page connector"},
+{t:"Flowchart", sym:"pent", q:"Name this flowchart symbol's meaning.", a:["off page connector","offpage connector"], d:"Off-page connector"},
+{t:"Flowchart", q:"Which flowchart structure follows START, INPUT, PROCESS, OUTPUT, END in a straight path?", a:["sequence"], d:"Sequence"},
+{t:"Flowchart", q:"Which flowchart structure uses a decision symbol with branches, such as the positive/negative/zero example?", a:["selection","conditional","selection/conditional","selection conditional"], d:"Selection (conditional)"},
+{t:"Flowchart", q:"Which flowchart structure repeats steps, like the one that displays 1 to 10?", a:["loop","looping"], d:"Loop"},
+{t:"Flowchart", q:"How many flow lines should come out of a process symbol?", a:["one","1"], d:"One"},
+{t:"Flowchart", q:"How many flow lines should enter a decision symbol?", a:["one","1"], d:"One (two or three leave it)"},
+{t:"Flowchart", q:"Which symbols are used to reduce the number of flow lines when a flowchart becomes complex?", a:["connector","connectors","connector symbols","on page connector","off page connector"], d:"Connector symbols"},
+{t:"Flowchart", q:"In the flowchart that displays 1 to 10 (m = 1, decision m<=10?, output m, m = m+1), what value of m makes the decision FALSE?", a:["11"], d:"11", e:"m reaches 11 after printing 10, so m<=10 is FALSE and the flow goes to END."},
+{t:"Flowchart", q:"In the positive/negative/zero flowchart, what is displayed when N is 0?", a:["zero","n is zero","0 is zero"], d:"N 'is ZERO'", e:"N>0? is FALSE, then N<0? is FALSE, so the output is ZERO."},
+{t:"C++ code", q:"In the 'average of two integers' source code, what is #include<iostream> labeled?", a:["pre processor","preprocessor"], d:"Pre-processor"},
+{t:"C++ code", q:"In that source code, what is int main() labeled?", a:["main function"], d:"Main function"},
+{t:"C++ code", q:"In that source code, what is int x, y; labeled?", a:["variable declarations","variable declaration"], d:"Variable declarations"},
+{t:"C++ code", q:"Which C++ statement reads input from the user in the sample code?", a:["cin"], d:"cin"},
+{t:"C++ code", q:"Which C++ statement prints output in the sample code?", a:["cout"], d:"cout"},
+{t:"C++ code", q:"In the sample code, what is average = (x + y) / 2; labeled?", a:["computation","process","computation (process)","computation process"], d:"Computation (Process)"},
+{t:"C++ code", q:"Type the expression that computes the average of two integers x and y in the module's pseudocode.", a:["(x + y) / 2","(x+y)/2"], d:"(x + y) / 2"}
+];
+const MCQ34 = [
+/* ---------- MODULE 3: Introduction to C++ ---------- */
+{t:"C++ basics", q:"C++ is described in M3 as an extension of:", o:["C","Java","Assembly language","Pascal"], e:"M3 C++ Overview."},
+{t:"C++ basics", q:"Which description of C++ matches M3?", o:["Statically typed, compiled, general-purpose, case-sensitive, free-form","Dynamically typed, interpreted and case-insensitive","Machine-level only and not case-sensitive","Object-oriented only, with no support for procedural code"], e:"M3: it supports procedural, object-oriented and generic programming."},
+{t:"C++ basics", q:"Why is C++ regarded as a middle-level language?", o:["It combines both high-level and low-level language features","It is compiled by an interpreter","It has no syntax","It is only used for middleware"], e:"M3."},
+{t:"C++ basics", q:"Who developed C++, and where?", o:["Bjarne Stroustrup at Bell Labs in Murray Hill, New Jersey","Dennis Ritchie at MIT","Bjarne Stroustrup at Microsoft","Ken Thompson at Bell Labs in Texas"], e:"M3 C++ Brief History: development started in 1979."},
+{t:"C++ basics", q:"C++ was first named ___ and renamed C++ in ___.", o:["C with Classes; 1983","C Plus; 1979","Object C; 1985","C with Objects; 1990"], e:"M3: started in 1979 as an enhancement to C, named C with Classes, renamed C++ in 1983."},
+{t:"C++ basics", q:"In the M3 'Hello World' program structure, which line is the pre-processor directive?", o:["#include <iostream>","using namespace std;","int main()","return 0;"], e:"M3 Structure of C++."},
+{t:"C++ basics", q:"Which marks the start and the end of the program in the M3 structure diagram?", o:["{ and }","START and END","main and return","#include and using"], e:"M3: the opening brace is the start of the program and the closing brace is the end."},
+{t:"Preprocessor", q:"Lines beginning with a hash or pound sign (#) are:", o:["Directives for the preprocessor","Comments","Variable declarations","Output statements"], e:"M3: they tell the compiler to preprocess the source code before compiling."},
+{t:"Preprocessor", q:"Which rule applies to preprocessor directives?", o:["No white space before the #, and no semicolon at the end","They must end with a semicolon","They must be inside main()","They must be in uppercase"], e:"M3."},
+{t:"Preprocessor", q:"The #include directive:", o:["Instructs the compiler to add the contents of an include file into your program during compilation","Defines a constant","Starts the main function","Declares a variable"], e:"M3. Syntax: #include<header_file>."},
+{t:"Preprocessor", q:"The iostream header includes the declarations of:", o:["The basic standard input-output library (cin, cout)","Mathematical functions such as pow and sqrt","String handling only","Escape sequences only"], e:"M3. math.h defines mathematical functions such as pow and sqrt."},
+{t:"Preprocessor", q:"Which header defines functions such as pow and sqrt?", o:["math.h","iostream","string","iomanip"], e:"M3: the math.h header defines various mathematical functions and one macro."},
+{t:"Preprocessor", q:"The #define directive is used to:", o:["Define symbolic names and constants","Include a header file","Start a comment","Declare main()"], e:"M3. Syntax: #define identifier value, e.g. #define PI 3.14159."},
+{t:"C++ basics", q:"Which comment forms does M3 present?", o:["// for a line comment and /* */ for a block comment","# for a line comment and /* */ for a block","<!-- --> and //","' and \"\"\""], e:"M3: comments have no effect on the behavior of the program."},
+{t:"C++ basics", q:"The line 'using namespace std;' tells the program that:", o:["The elements of the standard C++ library are declared within the namespace std","The program uses standard input only","The program has a standard main function","The code is standard ANSI C"], e:"M3."},
+{t:"C++ basics", q:"Which is TRUE about the function main()?", o:["It is the special function called when the program is run, and no semicolon is required after int main()","Every function must be named main","It is optional in a C++ program","A semicolon is required after int main()"], e:"M3."},
+{t:"C++ basics", q:"Everything between the braces of main is called the:", o:["Function's body","Header","Directive","Namespace"], e:"M3: the open brace begins main's definition and the closing brace ends it."},
+{t:"C++ basics", q:"A compound statement (block) is:", o:["A group of two or more C++ statements enclosed in braces","A statement with two semicolons","A statement with two operators","Two comments together"], e:"M3. Each statement must be terminated by a semicolon."},
+{t:"C++ basics", q:"return 0; in main():", o:["Terminates main() and returns the value 0 to the calling process (exit status)","Prints 0 on the screen","Declares a variable named 0","Starts the program"], e:"M3. It should end with a semicolon."},
+{t:"C++ basics", q:"Which is NOT one of the elements of C++ listed in M3?", o:["Pseudocode","Character set","Keywords","Operators"], e:"M3 Elements of C++: character set, keywords, data types, identifiers (variables, constants), operators."},
+{t:"Identifiers", q:"Which characters are in the C++ character set?", o:["Lowercase letters, uppercase letters, digits and special characters","Letters only","Letters and digits only","Digits and operators only"], e:"M3."},
+{t:"Identifiers", q:"Keywords are:", o:["Reserved words with special meaning in C++ that must not be used as identifier names","Words that name variables","Comments for the compiler","User-defined names"], e:"M3. They are case sensitive and should be in lowercase."},
+{t:"Identifiers", q:"How many ANSI keywords are listed in M3's Table 1?", o:["32","16","64","50"], e:"M3: 32 ANSI keywords. ANSI = American National Standard Institute."},
+{t:"Identifiers", q:"Which is one of the 32 ANSI keywords in the table?", o:["switch","print","input","loop"], e:"M3 Table 1 includes auto, break, case, char, const, continue, default, do, double, else, enum, extern, float, for, goto, if, int, long, register, return, short, signed, sizeof, static, struct, switch, typedef, union, unsigned, void, volatile, while."},
+{t:"Identifiers", q:"A C++ identifier is:", o:["A name used to identify a variable, function, class, module or any other user-defined item","Any reserved word","Only a variable's value","A type of comment"], e:"M3."},
+{t:"Identifiers", q:"Which symbols are NOT allowed within identifiers?", o:["Punctuation characters such as @, $ and %","Digits after the first character","Underscores","Uppercase letters"], e:"M3."},
+{t:"Identifiers", q:"Manpower and manpower in C++ are:", o:["Two different identifiers, because C++ is case-sensitive","The same identifier","A syntax error","Both keywords"], e:"M3."},
+{t:"Identifiers", q:"Which of these is a valid variable name by M3's rules?", o:["unit_1","40_birthday","first-variable","%_rate"], e:"Valid in M3: velocity, unit_1, day_month_year, temp_data, pay_period. Invalid: #sam, @discount, break, first-variable, %_rate, 40_birthday, 2percent."},
+{t:"Identifiers", q:"Which of these is NOT a valid variable name?", o:["2percent","pay_period","temp_data","day_month_year"], e:"A name cannot start with a digit."},
+{t:"Variables", q:"Why is 'break' not a valid variable name?", o:["It is a keyword","It is too short","It has no underscore","It has no digit"], e:"M3: variable names must not be any of the 32 keywords."},
+{t:"Variables", q:"A variable is:", o:["A data storage location with a value that can change during program execution","A fixed value that never changes","A reserved word","A header file"], e:"M3: it is also known as a user-defined identifier."},
+{t:"Variables", q:"What happens if you use a variable in a calculation without giving it a value first?", o:["It contains a random number","It contains zero automatically","The program deletes it","It becomes a constant"], e:"M3: you must initialize a variable, probably giving it zero, before using it. All variables must be declared before use."},
+{t:"Variables", q:"What is the maximum length of a variable name in M3?", o:["31 characters","8 characters","15 characters","255 characters"], e:"M3."},
+{t:"Variables", q:"Which rule for variable names is stated in M3?", o:["The first character must be a letter, and only letters, digits or underscores may follow","The first character must be an underscore","Blank spaces are allowed","Special characters are allowed after the first letter"], e:"M3. Also do not use an underscore as the first character."},
+{t:"Data types", q:"Data types are used to:", o:["Tell variables the type of data they can store, so the compiler can allocate memory","Name the program","Include header files","Terminate main()"], e:"M3: every data type requires a different amount of memory."},
+{t:"Data types", q:"Primitive data types are:", o:["Built-in or predefined types usable directly to declare variables","User-defined types only","Types for comments","Reserved for functions only"], e:"M3: e.g. int, char, float, bool."},
+{t:"Data types", q:"Which are the data type modifiers in M3?", o:["signed, unsigned, short, long","int, char, float, double","public, private, protected, static","const, define, include, void"], e:"M3: modifiers change the length of data a type can hold."},
+{t:"Data types", q:"The int data type typically needs ___ of memory and holds ___.", o:["4 bytes; whole numbers (+/-)","8 bytes; decimal numbers","1 byte; characters","2 bytes; true or false"], e:"M3: range -2147483648 to 2147483647."},
+{t:"Data types", q:"The char data type typically needs:", o:["1 byte","2 bytes","4 bytes","8 bytes"], e:"M3: range -128 to 127 or 0 to 255."},
+{t:"Data types", q:"Which keyword declares a boolean variable that stores true or false?", o:["bool","boolean","bit","logic"], e:"M3."},
+{t:"Data types", q:"float and double typically need ___ and ___ bytes respectively.", o:["4; 8","8; 4","2; 4","1; 2"], e:"M3: float is single precision, double is double precision."},
+{t:"Data types", q:"The void data type:", o:["Represents a valueless entity, used for functions that do not return a value","Stores whole numbers","Stores decimals","Stores characters"], e:"M3."},
+{t:"Data types", q:"The wide character type is represented by:", o:["wchar_t","char","widechar","wide"], e:"M3: it is generally 2 or 4 bytes long."},
+{t:"Variables", q:"Which declaration lets a variable store up to 20 characters?", o:["char name[20];","char name;","int name[20];","string name(20);"], e:"M3: char letter; stores a single character."},
+{t:"Variables", q:"Which is the correct syntax for initialization?", o:["datatype variable_name = initial value;","variable_name datatype = value;","datatype = variable_name value;","initial value = datatype variable_name;"], e:"M3. Example: float pi = 3.1416;"},
+{t:"Variables", q:"Constructor initialization is written as:", o:["int num(10);","int num = (10);","int(10) num;","int num[10];"], e:"M3: it is the same as int num = 10;"},
+{t:"Variables", q:"In an assignment 'variable = expression;', the expression's type:", o:["Must be the same as the variable's type","Can be any type","Must always be float","Must always be a string"], e:"M3: invalid example: int y; y = 5.75;"},
+{t:"Variables", q:"A variable declared outside all functions, including main(), is called:", o:["Global","Local","Formal","Static parameter"], e:"M3: a global variable may be used by any part of the program."},
+{t:"Variables", q:"A variable declared inside a function is called:", o:["Local, usable only by statements in the same function","Global","A formal parameter","A constant"], e:"M3. A formal parameter receives the arguments when a function is called."},
+{t:"Constants", q:"A constant is:", o:["Any expression with a fixed value that cannot be changed during program execution","A variable whose value changes","A keyword","A comment"], e:"M3."},
+{t:"Constants", q:"A character constant is enclosed in ___ and a string constant in ___.", o:["single quotes; double quotes","double quotes; single quotes","parentheses; braces","braces; brackets"], e:"M3."},
+{t:"Constants", q:"Floating-point constants require:", o:["A decimal point followed by the fractional component (it may include an 'e')","No decimal point","Quotes","Only whole numbers"], e:"M3."},
+{t:"Constants", q:"Which declares a typed constant?", o:["const float pi = 3.14159;","float const = pi 3.14159","constant pi = 3.14159;","define float pi 3.14159"], e:"M3: const int StartYear = 2005; is the same as #define StartYear 2005."},
+{t:"Operators", q:"Operators are:", o:["Symbols that tell the compiler to perform specific mathematical or logical manipulations","Names of variables","Reserved header files","Types of comments"], e:"M3."},
+{t:"Operators", q:"The assignment operator in C++ is:", o:["A single equal sign (=)","Double equals (==)","Colon equals (:=)","An arrow (\u2190)"], e:"M3: the value on the right is assigned to the variable on the left."},
+{t:"Operators", q:"What is the value of 5 % 2 in C++?", o:["1","2","2.5","0"], e:"M3 arithmetic table: % is remainder division, 5/2 = 2 and 5%2 = 1."},
+{t:"Operators", q:"What does 5 / 2 give when both are integers?", o:["2","2.5","3","1"], e:"M3 table: 5/2 = 2."},
+{t:"Operators", q:"What is the order of precedence (highest first) in M3?", o:["( ), then ++ and --, then * / %, then + -, then =","= first, then + -, then * / %","* / % first, then ( )","+ - first, then ( )"], e:"M3 shows left-to-right evaluation."},
+{t:"Operators", q:"Operator associativity specifies:", o:["Whether an operand with operators of the same precedence is grouped with the one on its left or right","Which operator is a keyword","How many operators can be used","The type of the result only"], e:"M3. Precedence specifies the order of operations in expressions with more than one operator."},
+{t:"Operators", q:"In M3, F = 9.0/5*C + 32 with C = 32 gives:", o:["89.6","64","57.6","1.8"], e:"9.0/5 = 1.8; 1.8 \u00d7 32 = 57.6; 57.6 + 32 = 89.6."},
+{t:"Operators", q:"Which are the compound operators?", o:["+=, -=, *=, /=, %=","==, !=, <=, >=","&&, ||, !","&, |, ^, ~"], e:"M3. Example: x += y;"},
+{t:"Operators", q:"The increment operator ++ and the decrement operator --:", o:["Add 1 to and subtract 1 from the operand, and can be prefix or postfix","Double and halve the operand","Compare two operands","Can only be postfix"], e:"M3. x = x+1; can be written x++; (postfix) or ++x; (prefix)."},
+{t:"Operators", q:"Which list contains only relational operators?", o:["==, !=, <, >, <=, >=","&&, ||, !","+, -, *, /, %","&, |, ^"], e:"M3: the result is true (1) or false (0)."},
+{t:"Operators", q:"What does the expression 5 >= 1 evaluate to?", o:["1 (true)","0 (false)","5","An error"], e:"M3. 5 == 1 is 0; 5 != 1 is 1; (5+10) == (3*5) is 1."},
+{t:"Operators", q:"Which are the logical operators in C++?", o:["&&, ||, !","and, or, not only","&, |, ~","==, !="], e:"M3: && (AND), || (OR), ! (NOT)."},
+{t:"Operators", q:"p = true and q = false. What is p || q?", o:["true","false","1 and 0","An error"], e:"M3 truth table: OR is true if either is true."},
+{t:"Operators", q:"p = true and q = false. What is p && q?", o:["false","true","1","An error"], e:"AND is true only when both are true."},
+{t:"Bitwise", q:"Which bitwise operator is XOR?", o:["^","|","&","~"], e:"M3: & AND, | OR, ^ XOR, ~ NOT (unary complement), << shift left, >> shift right."},
+{t:"Bitwise", q:"With A = 60 (0011 1100) and B = 13 (0000 1101), A & B equals:", o:["12","61","49","240"], e:"M3: A&B = 0000 1100 = 12."},
+{t:"Bitwise", q:"With A = 60 and B = 13, A | B equals:", o:["61","12","49","15"], e:"M3: 0011 1101 = 61."},
+{t:"Bitwise", q:"With A = 60 and B = 13, A ^ B equals:", o:["49","12","61","-61"], e:"M3: 0011 0001 = 49."},
+{t:"Bitwise", q:"With A = 60, ~A equals:", o:["-61","61","-60","195"], e:"M3: 1100 0011 in 2's complement form because it is a signed binary number."},
+{t:"Bitwise", q:"With A = 60, A << 2 and A >> 2 equal:", o:["240 and 15","15 and 240","120 and 30","61 and 59"], e:"M3: 1111 0000 = 240 and 0000 1111 = 15."},
+{t:"Operators", q:"The conditional (ternary) operator has the format:", o:["Exp = Exp1 ? Exp2 : Exp3;","Exp = Exp1 : Exp2 ? Exp3;","Exp = Exp1 ? Exp2 ? Exp3;","Exp = ? Exp1 : Exp2 Exp3;"], e:"M3: if the condition is true Exp2 is used, otherwise Exp3."},
+{t:"Operators", q:"What does 7 == 5 ? 4 : 3 return?", o:["3","4","7","5"], e:"M3: it returns 3, since 7 != 5."},
+{t:"Operators", q:"What does 7 == 5+2 ? 4 : 3 return?", o:["4","3","7","2"], e:"M3: it returns 4, since 7 equals 5+2."},
+{t:"Operators", q:"With a = -1 and b = 0, a>b ? a : b returns:", o:["The value of b (0)","The value of a (-1)","1","An error"], e:"M3: -1 is not greater than 0."},
+
+/* ---------- MODULE 4: C++ Basic Input/Output ---------- */
+{t:"Input", q:"In C++, the operator used for taking input is the ___ operator.", o:["Extraction (>>), also called 'get from'","Insertion (<<)","Assignment (=)","Scope (::)"], e:"M4."},
+{t:"Output", q:"The operator used for displaying output is the ___ operator.", o:["Insertion (<<), also called 'put to'","Extraction (>>)","Comparison (==)","Arrow (->)"], e:"M4."},
+{t:"Output", q:"Which header file declares the standard input and output stream objects?", o:["iostream","iomanip","math.h","string"], e:"M4."},
+{t:"Output", q:"The standard output by default is the ___ and the stream object used is ___.", o:["screen; cout","keyboard; cin","printer; cprint","file; cfile"], e:"M4."},
+{t:"Output", q:"Which is a valid cout statement?", o:["cout << \"Hello\";","cout >> \"Hello\";","cout = \"Hello\";","print << \"Hello\";"], e:"M4 syntax: cout << varName; or cout << \"Some String\"; or cout << value/expression;"},
+{t:"Output", q:"Chaining insertions such as cout << \"I am \" << age << \" years old\"; is useful to:", o:["Mix literals and variables in a single statement","Create a loop","Declare variables","Include files"], e:"M4."},
+{t:"Output", q:"Does cout automatically add a line break at the end of a statement?", o:["No, unless you instruct it to","Yes, always","Only for numbers","Only for strings"], e:"M4: two separate cout statements print their sentences on the same line."},
+{t:"Escape codes", q:"The new-line character in a string is written as:", o:["\\n","/n","\\l","<n>"], e:"M4: a backslash followed by a lowercase n. endl also breaks lines."},
+{t:"Escape codes", q:"Which escape sequence is the horizontal tab?", o:["\\t","\\h","\\v","\\f"], e:"M4: \\v is the vertical tab."},
+{t:"Escape codes", q:"The escape sequence \\a produces:", o:["An audible bell","A backspace","A carriage return","A new page"], e:"M4: \\b backspace, \\r carriage return, \\f form feed (new page)."},
+{t:"Escape codes", q:"Which escape sequence prints a backslash?", o:["\\\\","\\b","\\/","\\s"], e:"M4: escape codes represent special characters inside string and character literals."},
+{t:"Escape codes", q:"Which escape sequence is the carriage return?", o:["\\r","\\c","\\n","\\a"], e:"M4."},
+{t:"Input", q:"The standard input by default is the ___ and the stream object is ___.", o:["keyboard; cin","screen; cout","mouse; cmouse","file; cfile"], e:"M4."},
+{t:"Input", q:"Which is a valid cin statement for two integers?", o:["cin >> num1 >> num2;","cin << num1 << num2;","cin(num1, num2);","input >> num1 >> num2;"], e:"M4: the two inputs are separated by a space."},
+{t:"Input", q:"In 'cin >> age;', where is the extracted data stored?", o:["In the variable age on the right of the extraction operator","In cin","On the screen","In the keyboard"], e:"M4."},
+{t:"Input", q:"getline() is used to:", o:["Read a string or a line from the input stream","Print a line","Compute a length","Read one integer only"], e:"M4: it takes the stream (cin) as first argument and the string variable as second; it is in the <string> header."},
+{t:"Type conversion", q:"Type conversion is:", o:["The process of converting one predefined type into another","Renaming a variable","Compiling source code","Deleting a variable"], e:"M4. It occurs when variables of different types are mixed."},
+{t:"Type conversion", q:"The two forms of type conversion in C++ are:", o:["Implicit and explicit","Static and dynamic","Local and global","Prefix and postfix"], e:"M4."},
+{t:"Type conversion", q:"Implicit type conversion is:", o:["Automatic conversion performed by the compiler without the programmer's intervention","Conversion written by the programmer with a cast","Conversion only for strings","A syntax error"], e:"M4."},
+{t:"Type conversion", q:"Explicit type conversion is also called:", o:["Type casting","Type loss","Type inference","Auto conversion"], e:"M4: it is user-defined and forces an expression to be a specific type."},
+{t:"Type conversion", q:"Which is the general form of type casting in M4?", o:["(datatype) expression;","datatype(expression) = ;","expression -> datatype;","cast datatype expression;"], e:"M4. Example: (float)(x + y/2);"},
+{t:"Type conversion", q:"Conversion from a larger type to a smaller type is:", o:["Prone to data loss","Always safe","Never allowed","Only for char"], e:"M4: for example, double to int."},
+{t:"Type conversion", q:"In M4's implicit conversion order, which comes right after int?", o:["unsigned int","long","float","short int"], e:"bool \u2192 char \u2192 short int \u2192 int \u2192 unsigned int \u2192 long \u2192 unsigned \u2192 long long \u2192 float \u2192 double \u2192 long double."},
+{t:"Type conversion", q:"Which type is at the end (widest) of the implicit conversion order?", o:["long double","double","long long","float"], e:"M4."},
+{t:"Math functions", q:"Which function raises a base to an exponent?", o:["pow(base, exponent)","sqrt(variable)","abs(value)","round(variable)"], e:"M4. pow and sqrt are part of the <math.h> header."},
+{t:"Math functions", q:"sqrt(variable) computes:", o:["The square root","The absolute value","The power","The remainder"], e:"M4."},
+{t:"Math functions", q:"abs() is used for ___ numbers, while fabs() is used for ___ numbers.", o:["integer; floating-type","floating-type; integer","negative; positive","small; large"], e:"M4."},
+{t:"Math functions", q:"ceil() and floor() do what?", o:["ceil rounds up, floor rounds down","ceil rounds down, floor rounds up","Both round to the nearest","Both remove decimals"], e:"M4: ceil gives the least succeeding integer and floor gives the greatest preceding integer."},
+{t:"Math functions", q:"What are ceil(2.5) and floor(2.5)?", o:["3 and 2","2 and 3","3 and 3","2 and 2"], e:"M4 examples: floor(2.5) = 2, ceil(2.5) = 3."},
+{t:"Math functions", q:"What are ceil(-2.1) and floor(-2.1)?", o:["-2 and -3","-3 and -2","-2 and -2","-3 and -3"], e:"M4 examples: floor(-2.1) = -3, ceil(-2.1) = -2."},
+{t:"Math functions", q:"trunc() does what?", o:["Removes the digits after the decimal point (rounds toward zero)","Rounds to the closest integer","Rounds up","Raises to a power"], e:"M4. round() rounds the given number to the closest integer."},
+{t:"Math functions", q:"round() does what?", o:["Rounds a number to the closest integer","Removes digits after the decimal point","Always rounds up","Always rounds down"], e:"M4."},
+{t:"Formatting", q:"setprecision() belongs to which header?", o:["iomanip","iostream","math.h","string"], e:"M4: when used with 'fixed' it sets the number of digits after the decimal point."},
+{t:"Formatting", q:"When the value in setprecision() exceeds the number of floating point digits in the original number:", o:["Zeros are appended to match the precision","An error occurs","The number is rounded up","The number is truncated"], e:"M4 note."}
+];
+const TF34 = [
+/* ---------- MODULE 3 ---------- */
+{t:"C++ basics", q:"C++ is an extension of C, and it supports procedural, object-oriented and generic programming.", a:true, e:"M3 overview."},
+{t:"C++ basics", q:"C++ is a dynamically typed, interpreted and case-insensitive language.", a:false, e:"It is statically typed, compiled and case-sensitive."},
+{t:"C++ basics", q:"C++ is regarded as a middle-level language because it combines high-level and low-level language features.", a:true, e:"M3."},
+{t:"C++ basics", q:"Bjarne Stroustrup started developing C++ in 1979 at Bell Labs, and it was renamed from 'C with Classes' to C++ in 1983.", a:true, e:"M3 history."},
+{t:"C++ basics", q:"C++ was developed at Bell Labs in Texas by Dennis Ritchie.", a:false, e:"Bjarne Stroustrup, at Bell Labs in Murray Hill, New Jersey."},
+{t:"Preprocessor", q:"A semicolon is required at the end of a preprocessor directive such as #include <iostream>.", a:false, e:"No semicolon, and no white space before the #."},
+{t:"Preprocessor", q:"#include and #define are common examples of preprocessor directives.", a:true, e:"M3."},
+{t:"Preprocessor", q:"The #include directive adds the contents of an include file into your program during compilation.", a:true, e:"M3."},
+{t:"Preprocessor", q:"The iostream header declares pow and sqrt.", a:false, e:"iostream declares the basic standard input-output library (cin, cout). pow and sqrt are in math.h."},
+{t:"Preprocessor", q:"The syntax of #define is: #define identifier value.", a:true, e:"M3: e.g. #define PI 3.14159."},
+{t:"C++ basics", q:"Comments written with // or /* */ affect the behavior of the program.", a:false, e:"Comments have no effect on program behavior. They only hold notes for the programmer."},
+{t:"C++ basics", q:"A semicolon is required after 'int main()'.", a:false, e:"Semicolon is NOT required after int main()."},
+{t:"C++ basics", q:"Every C++ statement must be terminated by a semicolon.", a:true, e:"M3."},
+{t:"C++ basics", q:"A compound statement is a group of two or more statements enclosed in braces.", a:true, e:"M3. It is also called a block."},
+{t:"C++ basics", q:"return 0; terminates main() and returns 0 to the calling process.", a:true, e:"M3."},
+{t:"C++ basics", q:"A C++ program may have more than one main() function.", a:false, e:"Technical Exercise 3: every program must have a main function and can only have one."},
+{t:"Identifiers", q:"Keywords in C++ are case sensitive and should be in lowercase.", a:true, e:"M3."},
+{t:"Identifiers", q:"There are 32 ANSI keywords listed in the module.", a:true, e:"M3 Table 1."},
+{t:"Identifiers", q:"Manpower and manpower are the same identifier in C++.", a:false, e:"C++ is case-sensitive, so they are different identifiers."},
+{t:"Identifiers", q:"Identifiers may contain punctuation characters such as @, $ and %.", a:false, e:"They are not allowed."},
+{t:"Variables", q:"'break' is a valid variable name because it is a short word.", a:false, e:"break is a keyword. Variable names must not be any of the keywords."},
+{t:"Variables", q:"'first-variable' is a valid variable name.", a:false, e:"The hyphen is a special character, which is not allowed."},
+{t:"Variables", q:"'unit_1' and 'day_month_year' are valid variable names.", a:true, e:"They use only letters, digits and underscores and start with a letter."},
+{t:"Variables", q:"A variable may start with a digit as long as it contains letters later.", a:false, e:"The first character must be a letter, so 2percent and 40_birthday are invalid."},
+{t:"Variables", q:"All variables in C++ must be declared prior to their use.", a:true, e:"M3."},
+{t:"Variables", q:"An uninitialized variable automatically contains 0.", a:false, e:"It contains a random number."},
+{t:"Variables", q:"Variable names can be up to 31 characters long.", a:true, e:"M3."},
+{t:"Data types", q:"The int data type typically requires 4 bytes and char typically requires 1 byte.", a:true, e:"M3."},
+{t:"Data types", q:"double requires 4 bytes and float requires 8 bytes.", a:false, e:"Reversed: float typically needs 4 bytes, double 8 bytes."},
+{t:"Data types", q:"The void data type is used for functions that do not return a value.", a:true, e:"M3."},
+{t:"Data types", q:"The wide character type wchar_t is generally 2 or 4 bytes long.", a:true, e:"M3."},
+{t:"Data types", q:"signed, unsigned, short and long are data type modifiers.", a:true, e:"M3."},
+{t:"Variables", q:"char letter; can store a single character, while char name[20]; can store up to 20 characters.", a:true, e:"M3 declaration examples."},
+{t:"Variables", q:"'int y; y = 5.75;' is a valid example of assignment in M3.", a:false, e:"M3 lists it as the invalid example: the expression's type must be the same as the variable's type."},
+{t:"Variables", q:"int num(10); is the same as int num = 10;", a:true, e:"M3: constructor initialization."},
+{t:"Variables", q:"A local variable may be used by any part of the program.", a:false, e:"That describes a global variable. A local variable is used only by statements in the same function."},
+{t:"Constants", q:"The value stored in a constant can be changed during program execution.", a:false, e:"Unlike a variable, a constant cannot be changed."},
+{t:"Constants", q:"A character constant is enclosed in single quotes, and a string constant in double quotes.", a:true, e:"M3."},
+{t:"Constants", q:"const int StartYear = 2005; has the same effect as #define StartYear 2005.", a:true, e:"M3 note."},
+{t:"Operators", q:"In C++, the assignment operator is a single equal sign (=).", a:true, e:"M3."},
+{t:"Operators", q:"In C++, 5 / 2 with integers gives 2.5.", a:false, e:"It gives 2. 5 % 2 gives 1, the remainder."},
+{t:"Operators", q:"In the order of precedence, * / % are evaluated before + -.", a:true, e:"M3: ( ), ++ --, * / %, + -, then =."},
+{t:"Operators", q:"The expression 5 == 1 evaluates to 1 (true).", a:false, e:"It is 0 (false). 5 >= 1 and 5 != 1 are 1."},
+{t:"Operators", q:"x++ (postfix) and ++x (prefix) are both ways of writing x = x + 1.", a:true, e:"M3."},
+{t:"Operators", q:"&& is the logical OR and || is the logical AND.", a:false, e:"&& is AND and || is OR. ! is NOT."},
+{t:"Operators", q:"A relational operator yields true (1) or false (0).", a:true, e:"M3."},
+{t:"Bitwise", q:"For A = 60 and B = 13, A & B is 12 and A | B is 61.", a:true, e:"M3."},
+{t:"Bitwise", q:"For A = 60 and B = 13, A ^ B is 61.", a:false, e:"A ^ B is 49. A | B is 61."},
+{t:"Bitwise", q:"~A for A = 60 gives -61.", a:true, e:"M3: bit inversion in 2's complement."},
+{t:"Bitwise", q:"A << 2 shifts bits left and gives 240 for A = 60, while A >> 2 gives 15.", a:true, e:"M3."},
+{t:"Operators", q:"The conditional operator ? : is also called the ternary operator.", a:true, e:"M3."},
+{t:"Operators", q:"7 == 5 ? 4 : 3 returns 4.", a:false, e:"7 == 5 is false, so it returns 3."},
+{t:"Operators", q:"For x = 1 and y = 5, Test = x <= y ? 1 : 0; gives 1.", a:true, e:"M3."},
+
+/* ---------- MODULE 4 ---------- */
+{t:"Input", q:"The extraction operator (>>) is used for input and the insertion operator (<<) is used for output.", a:true, e:"M4."},
+{t:"Output", q:"The insertion operator (<<) is used with cin.", a:false, e:"<< goes with cout. cin uses the extraction operator >>."},
+{t:"Output", q:"cout automatically adds a line break at the end of every statement.", a:false, e:"It does not, unless instructed (\\n or endl)."},
+{t:"Output", q:"Multiple insertion operations (<<) may be chained in a single cout statement.", a:true, e:"M4."},
+{t:"Escape codes", q:"\\n is a line feed (new line) and \\t is a horizontal tab.", a:true, e:"M4."},
+{t:"Escape codes", q:"\\r is the backspace escape sequence.", a:false, e:"\\r is carriage return. \\b is backspace."},
+{t:"Escape codes", q:"\\\\ prints a single backslash.", a:true, e:"M4 escape table."},
+{t:"Input", q:"The standard input by default is the keyboard, and the stream object for it is cin.", a:true, e:"M4."},
+{t:"Input", q:"cin >> num1 >> num2; waits for two inputs from the keyboard separated by a space.", a:true, e:"M4."},
+{t:"Input", q:"getline() takes the string variable as its first argument and the stream cin as its second.", a:false, e:"Reversed: the stream (cin) is the first argument and the string variable is the second."},
+{t:"Type conversion", q:"Implicit type conversion is performed by the compiler without the programmer's intervention.", a:true, e:"M4."},
+{t:"Type conversion", q:"Explicit type conversion is also known as automatic type conversion.", a:false, e:"Automatic is implicit. Explicit conversion is type casting, written by the programmer."},
+{t:"Type conversion", q:"Converting a value from a larger data type to a smaller data type is prone to data loss.", a:true, e:"M4."},
+{t:"Type conversion", q:"The type casting general form is (datatype) expression;", a:true, e:"M4: e.g. (float)(x + y/2)."},
+{t:"Math functions", q:"pow and sqrt are part of the math.h header.", a:true, e:"M4."},
+{t:"Math functions", q:"abs() is for floating-type numbers while fabs() is for integers.", a:false, e:"abs() is for integers and fabs() for floating-type numbers."},
+{t:"Math functions", q:"floor(-2.1) gives -3 and ceil(-2.1) gives -2.", a:true, e:"M4 examples."},
+{t:"Math functions", q:"floor(2.9) gives 3.", a:false, e:"floor(2.9) = 2. ceil(2.9) = 3."},
+{t:"Math functions", q:"trunc() removes the digits after the decimal point, while round() gives the closest integer.", a:true, e:"M4."},
+{t:"Formatting", q:"setprecision() is part of the iomanip header.", a:true, e:"M4."},
+{t:"Formatting", q:"Used with 'fixed', setprecision(n) sets the number of digits after the decimal point.", a:true, e:"M4."},
+{t:"Formatting", q:"If setprecision() is larger than the number of digits available, an error occurs.", a:false, e:"Zeros are appended to match the precision."}
+];
+const IDQ34 = [
+/* ---------- MODULE 3 ---------- */
+{t:"C++ basics", q:"Who developed C++?", a:["bjarne stroustrup","stroustrup"], d:"Bjarne Stroustrup"},
+{t:"C++ basics", q:"In what year did Stroustrup start developing C++ at Bell Labs?", a:["1979"], d:"1979"},
+{t:"C++ basics", q:"C++ was originally named ____, then renamed in 1983.", a:["c with classes"], d:"C with Classes"},
+{t:"C++ basics", q:"Bell Labs is located in which city in New Jersey, according to M3?", a:["murray hill"], d:"Murray Hill"},
+{t:"C++ basics", q:"C++ is regarded as what level of language, since it combines high-level and low-level features?", a:["middle level","middle level language","middle"], d:"Middle-level language"},
+{t:"C++ basics", q:"In the M3 structure of a C++ program, what is '#include <iostream>' labeled?", a:["pre processor directive","preprocessor directive","pre processor","preprocessor"], d:"Pre-processor directive"},
+{t:"C++ basics", q:"In the M3 structure, what is '//This is my first program in C++' labeled?", a:["comment"], d:"Comment"},
+{t:"C++ basics", q:"In the M3 structure, what is cout<<\"Hello World\"; labeled?", a:["output statement"], d:"Output statement"},
+{t:"Preprocessor", q:"Lines beginning with a hash (#) are directives for the ____.", a:["preprocessor","pre processor"], d:"Preprocessor"},
+{t:"Preprocessor", q:"Which directive instructs the compiler to add the contents of an include file into your program?", a:["#include","include"], d:"#include"},
+{t:"Preprocessor", q:"Which directive defines symbolic names and constants?", a:["#define","define"], d:"#define"},
+{t:"Preprocessor", q:"Which header declares cin and cout?", a:["iostream"], d:"iostream"},
+{t:"Preprocessor", q:"Which header defines mathematical functions such as pow and sqrt?", a:["math.h","math h","math"], d:"math.h"},
+{t:"C++ basics", q:"Type the two characters that begin a one-line comment in C++.", a:["//"], d:"//"},
+{t:"C++ basics", q:"All elements of the standard C++ library are declared within the namespace named ____.", a:["std","standard"], d:"std (standard)"},
+{t:"C++ basics", q:"What special function is called when a C++ program is run?", a:["main","main function","main()","int main()"], d:"main()"},
+{t:"C++ basics", q:"What do you call a group of two or more statements enclosed in braces?", a:["compound statement","block","compound statement (block)"], d:"Compound statement (block)"},
+{t:"C++ basics", q:"return 0; defines the ____ of the process or application.", a:["exit status"], d:"Exit status"},
+{t:"Identifiers", q:"What are reserved words with special meaning in C++ that cannot be used as identifier names?", a:["keywords","keyword"], d:"Keywords"},
+{t:"Identifiers", q:"How many ANSI keywords does M3 list?", a:["32","thirty two"], d:"32"},
+{t:"Identifiers", q:"What does ANSI stand for?", a:["american national standard institute","american national standards institute"], d:"American National Standard Institute"},
+{t:"Identifiers", q:"What is a name used to identify a variable, function, class, module or any other user-defined item?", a:["identifier"], d:"Identifier"},
+{t:"Variables", q:"A variable is also known as a user-defined ____.", a:["identifier"], d:"Identifier"},
+{t:"Variables", q:"What is the maximum number of characters in a variable name according to M3?", a:["31"], d:"31"},
+{t:"Variables", q:"Why can the name 'break' not be used for a variable?", a:["keyword","it is a keyword","reserved word"], d:"It is a keyword"},
+{t:"Data types", q:"Which keyword declares a whole-number (integer) variable?", a:["int"], d:"int"},
+{t:"Data types", q:"Which keyword declares a character variable?", a:["char"], d:"char"},
+{t:"Data types", q:"Which keyword declares a variable that stores true or false?", a:["bool"], d:"bool"},
+{t:"Data types", q:"Which keyword declares a single-precision floating point variable?", a:["float"], d:"float"},
+{t:"Data types", q:"Which keyword declares a double-precision floating point variable?", a:["double"], d:"double"},
+{t:"Data types", q:"Which data type represents a valueless entity, used for functions that do not return a value?", a:["void"], d:"void"},
+{t:"Data types", q:"What is the type name for a wide character?", a:["wchar_t","wchar t"], d:"wchar_t"},
+{t:"Data types", q:"Typically, how many bytes does an int need?", a:["4","four"], d:"4 bytes"},
+{t:"Data types", q:"Typically, how many bytes does a char need?", a:["1","one"], d:"1 byte"},
+{t:"Data types", q:"Typically, how many bytes does a double need?", a:["8","eight"], d:"8 bytes"},
+{t:"Data types", q:"Name one of the four data type modifiers (signed, unsigned, short, long). Which modifier allows only non-negative values?", a:["unsigned"], d:"unsigned", e:"Modifiers change the length of data a type can hold. unsigned has no negative values."},
+{t:"Variables", q:"What kind of variable is declared outside all functions, including main(), and can be used by any part of the program?", a:["global","global variable"], d:"Global variable"},
+{t:"Variables", q:"What kind of variable is declared inside a function and used only by statements in that function?", a:["local","local variable"], d:"Local variable"},
+{t:"Variables", q:"What do you call a variable declared in a function's parameter list that receives the arguments when the function is called?", a:["formal parameter","formal parameters","parameter"], d:"Formal parameter"},
+{t:"Constants", q:"Which keyword declares a constant with a specific type, like const float pi = 3.14159;?", a:["const"], d:"const"},
+{t:"Constants", q:"A character constant is enclosed in what kind of quotes?", a:["single quotes","single","single quote"], d:"Single quotes"},
+{t:"Constants", q:"A string constant is enclosed in what kind of quotes?", a:["double quotes","double","double quote"], d:"Double quotes"},
+{t:"Operators", q:"What do you call the symbols that tell the compiler to perform specific mathematical or logical manipulations?", a:["operators","operator"], d:"Operators"},
+{t:"Operators", q:"What is the % operator called (arithmetic operator for the remainder)?", a:["remainder division","remainder","modulus","modulo","mod"], d:"Remainder division (modulus)"},
+{t:"Operators", q:"What does 5 % 2 evaluate to?", a:["1"], d:"1"},
+{t:"Operators", q:"What does 5 / 2 evaluate to when both are integers?", a:["2"], d:"2"},
+{t:"Operators", q:"What specifies the order of operations in expressions that contain more than one operator?", a:["operator precedence","precedence"], d:"Operator precedence"},
+{t:"Operators", q:"What specifies whether an operand is grouped with the operator on its left or right, when operators have the same precedence?", a:["operator associativity","associativity"], d:"Operator associativity"},
+{t:"Operators", q:"F = 9.0/5*C + 32 with C = 32. What is F?", a:["89.6"], d:"89.6"},
+{t:"Operators", q:"What kind of operators are +=, -=, *=, /= and %=?", a:["compound","compound operators","compound operator","compound assignment"], d:"Compound operators"},
+{t:"Operators", q:"What do you call the ++ operator?", a:["increment","increment operator"], d:"Increment operator"},
+{t:"Operators", q:"What do you call the -- operator?", a:["decrement","decrement operator"], d:"Decrement operator"},
+{t:"Operators", q:"In '++x', is the increment operator written in prefix or postfix form?", a:["prefix"], d:"Prefix"},
+{t:"Operators", q:"In 'x++', is the increment operator written in prefix or postfix form?", a:["postfix"], d:"Postfix"},
+{t:"Operators", q:"What category of operators do ==, !=, <, >, <= and >= belong to?", a:["relational","relational operators","relational operator","comparison"], d:"Relational operators"},
+{t:"Operators", q:"What does 5 >= 1 evaluate to (1 or 0)?", a:["1","true"], d:"1 (true)"},
+{t:"Operators", q:"What does 5 == 1 evaluate to (1 or 0)?", a:["0","false"], d:"0 (false)"},
+{t:"Operators", q:"The logical operator && stands for which word?", a:["and"], d:"AND"},
+{t:"Operators", q:"The logical operator || stands for which word?", a:["or"], d:"OR"},
+{t:"Operators", q:"The logical operator ! stands for which word?", a:["not"], d:"NOT"},
+{t:"Bitwise", q:"Name the bitwise operator ^.", a:["xor","exclusive or","bitwise exclusive or","bitwise xor"], d:"XOR (exclusive OR)"},
+{t:"Bitwise", q:"Name the bitwise operator ~ (unary complement).", a:["not","ones complement","complement","bitwise not","unary complement","ones complement operator"], d:"NOT (ones complement)"},
+{t:"Bitwise", q:"A = 60 and B = 13. What is A & B?", a:["12"], d:"12"},
+{t:"Bitwise", q:"A = 60 and B = 13. What is A | B?", a:["61"], d:"61"},
+{t:"Bitwise", q:"A = 60 and B = 13. What is A ^ B?", a:["49"], d:"49"},
+{t:"Bitwise", q:"A = 60. What is ~A?", a:["-61"], d:"-61"},
+{t:"Bitwise", q:"A = 60. What is A << 2?", a:["240"], d:"240"},
+{t:"Bitwise", q:"A = 60. What is A >> 2?", a:["15"], d:"15"},
+{t:"Operators", q:"What are the operators ? and : used together to build conditional expressions called?", a:["conditional operator","ternary operator","ternary","conditional operators","conditional"], d:"Conditional (ternary) operator"},
+{t:"Operators", code:"7 == 5+2 ? 4 : 3", q:"What does this expression return?", a:["4"], d:"4"},
+{t:"Operators", code:"a = -1, b = 0\na > b ? a : b", q:"Which value is returned?", a:["0","b","the value of b"], d:"0 (the value of b)"},
+
+/* ---------- MODULE 4 ---------- */
+{t:"Input", q:"What is the >> operator called (also 'get from')?", a:["extraction operator","extraction","get from"], d:"Extraction operator"},
+{t:"Output", q:"What is the << operator called (also 'put to')?", a:["insertion operator","insertion","put to"], d:"Insertion operator"},
+{t:"Output", q:"What stream object accesses the standard output (the screen)?", a:["cout"], d:"cout"},
+{t:"Input", q:"What stream object accesses the standard input (the keyboard)?", a:["cin"], d:"cin"},
+{t:"Output", q:"Which manipulator breaks a line, as an alternative to the new-line character?", a:["endl"], d:"endl"},
+{t:"Escape codes", q:"Type the escape sequence for a new line.", a:["\\n"], d:"\\n"},
+{t:"Escape codes", q:"Type the escape sequence for a horizontal tab.", a:["\\t"], d:"\\t"},
+{t:"Escape codes", q:"Type the escape sequence for a backspace.", a:["\\b"], d:"\\b"},
+{t:"Escape codes", q:"Type the escape sequence for a carriage return.", a:["\\r"], d:"\\r"},
+{t:"Escape codes", q:"Type the escape sequence for an audible bell.", a:["\\a"], d:"\\a"},
+{t:"Escape codes", q:"Type the escape sequence for a form feed (new page).", a:["\\f"], d:"\\f"},
+{t:"Escape codes", q:"Type the escape sequence for a vertical tab.", a:["\\v"], d:"\\v"},
+{t:"Escape codes", q:"What are \\n, \\t and \\\\ called, used to represent special characters inside string and character literals?", a:["escape sequences","escape codes","escape sequence","escape code"], d:"Escape sequences (escape codes)"},
+{t:"Input", q:"Which standard library function reads a string or a line from the input stream?", a:["getline","getline()"], d:"getline()"},
+{t:"Input", q:"getline() is present in which header?", a:["string","<string>"], d:"<string>"},
+{t:"Type conversion", q:"What is the process of converting one predefined type into another?", a:["type conversion","data type conversion"], d:"Type conversion"},
+{t:"Type conversion", q:"What do you call the automatic type conversion performed by the compiler?", a:["implicit type conversion","implicit","implicit conversion"], d:"Implicit type conversion"},
+{t:"Type conversion", q:"What do you call the user-defined conversion that forces an expression to be a specific type?", a:["explicit type conversion","explicit","type casting","typecasting","casting"], d:"Explicit type conversion (type casting)"},
+{t:"Type conversion", q:"What is (float)(x + y/2) an example of?", a:["type casting","explicit type conversion","explicit","casting"], d:"Type casting"},
+{t:"Type conversion", q:"Converting a larger type to a smaller type is prone to what?", a:["data loss","loss of data","loss of information"], d:"Data loss"},
+{t:"Math functions", q:"Which function raises a base to an exponent?", a:["pow","pow()"], d:"pow()"},
+{t:"Math functions", q:"Which function computes the square root?", a:["sqrt","sqrt()"], d:"sqrt()"},
+{t:"Math functions", q:"Which function returns the absolute value of an integer?", a:["abs","abs()"], d:"abs()"},
+{t:"Math functions", q:"Which function returns the absolute value of a floating-type number?", a:["fabs","fabs()"], d:"fabs()"},
+{t:"Math functions", q:"Which function rounds a value up to the least succeeding integer?", a:["ceil","ceil()","ceiling"], d:"ceil()"},
+{t:"Math functions", q:"Which function rounds a value down to the greatest preceding integer?", a:["floor","floor()"], d:"floor()"},
+{t:"Math functions", q:"Which function removes the digits after the decimal point (rounds toward zero)?", a:["trunc","trunc()"], d:"trunc()"},
+{t:"Math functions", q:"Which function rounds a number to the closest integer?", a:["round","round()"], d:"round()"},
+{t:"Math functions", q:"floor(-2.1) returns what?", a:["-3"], d:"-3"},
+{t:"Math functions", q:"ceil(-2.1) returns what?", a:["-2"], d:"-2"},
+{t:"Math functions", q:"ceil(2.5) returns what?", a:["3"], d:"3"},
+{t:"Math functions", q:"sqrt(81.0) gives what?", a:["9","9.0"], d:"9"},
+{t:"Math functions", q:"pow(4.0, 2.0) gives what?", a:["16","16.0"], d:"16"},
+{t:"Formatting", q:"Which header must you include to use setw() and setprecision()?", a:["iomanip","iomanip.h"], d:"iomanip"},
+{t:"Formatting", q:"Which manipulator sets the width of the field assigned for output?", a:["setw","setw()"], d:"setw()"},
+{t:"Formatting", q:"Which manipulator sets the decimal precision used to format floating-point output?", a:["setprecision","setprecision()"], d:"setprecision()"},
+{t:"Formatting", q:"Which ios flag makes the number in setprecision() the count of decimal places?", a:["fixed","ios::fixed","ios fixed"], d:"fixed (ios::fixed)"},
+{t:"Formatting", q:"Which format option displays the decimal point and trailing zeros for all floating point numbers?", a:["showpoint"], d:"showpoint"},
+{t:"Formatting", q:"Which format option displays a leading plus sign before positive values?", a:["showpos"], d:"showpos"},
+{t:"Formatting", q:"Which format option displays floating point numbers in scientific (E) notation?", a:["scientific"], d:"scientific"},
+{t:"Formatting", q:"Which function replaces setf to remove a format option?", a:["unsetf","unsetf()"], d:"unsetf"},
+{t:"Formatting", code:"cout << setprecision(5) << 123.456;", q:"What is printed (no fixed flag)?", a:["123.46"], d:"123.46", e:"Without fixed, setprecision(5) sets the total number of digits, so the value is rounded to 5 digits."},
+{t:"Formatting", code:"cout << setw(6) << \"R\";", q:"How many blank spaces are printed before R?", a:["5","five"], d:"5", e:"The field is 6 characters wide and R takes 1, so there are 5 blank spaces."}
+];
+const FUN1 = "int year;\ncout << \"Enter a year: \";\ncin >> year;\nif (year % 4 == 0)\n{\n  if (year % 100 == 0)\n  {\n    if (year % 400 == 0)\n      cout << year << \" is a leap year.\";\n    else\n      cout << year << \" is not a leap year.\";\n  }\n  else\n    cout << year << \" is a leap year.\";\n}\nelse\n  cout << year << \" is not a leap year.\";";
+const FUN2 = "int n, num, digit, rev = 0;\ncout << \"Enter a positive number: \";\ncin >> num;\nn = num;\ndo\n{\n  digit = num % 10;\n  rev = (rev * 10) + digit;\n  num = num / 10;\n} while (num != 0);\ncout << \" The reverse of the number is: \" << rev << endl;\nif (n == rev)\n  cout << \" The number is a palindrome.\";\nelse\n  cout << \" The number is not a palindrome.\";";
+const TRY = "1  include <iostream>\n2  using namespace std;\n3  int main()\n4  {\n5      int n1,n2,s\n6      cout << \"Enter first number: \";\n7      cin << n1;\n8      cout << \"Enter second number: \";\n9      cin >> n2;\n10     s=n1-n2;\n11     cout<<\"The sum of \"<<n1<<\" and \"<<n2<<\" is: \"<<s;\n12     return 0;\n13 }";
+const PAY = "monthly salary = 18000\nhourly rate = salary / 30 / 8\nlates and absences = 30 minutes\nPhilhealth = 1000, Pag-ibig = 800, SSS = 1200\ntax = 12% of the monthly salary";
+
+const TECH = [
+/* ================= EXERCISE 1: Familiarization of the C++ environment (M1) ================= */
+{ty:"id", m:"M1", t:"Lab 1", q:"In the Q&A of Exercise 1: what does IDE stand for?", a:["integrated development environment"], d:"Integrated Development Environment", e:"Visual Studio is the IDE used in the exercise to create, build and run C++ programs."},
+{ty:"mcq", m:"M1", t:"Lab 1", q:"Microsoft Visual C++ (MSVC) is:", o:["The C++, C and assembly language development tools and libraries available as part of Visual Studio on Windows","A C++ translator that runs only on Linux","A language for web pages","A flowchart drawing tool"], e:"Exercise 1 background information."},
+{ty:"order", m:"M1", t:"Lab 1", q:"Put the steps for creating a C++ project in Visual Studio 2019 in the correct order.", blocks:["From the main menu, choose File > New > Project","Set Language to C++, Platform to Windows, Project type to Console","Choose Console App, then click Next","Enter a name for the project (and a location if desired)","Click the Create button"], e:"Exercise 1, part A."},
+{ty:"id", m:"M1", t:"Lab 1", q:"Which menu path is used to build a project? (Give the menu item, or its shortcut keys.)", a:["build solution","ctrl+shift+b","ctrl shift b","build > build solution"], d:"Build > Build Solution (Ctrl+Shift+B)", e:"Exercise 1, part B."},
+{ty:"id", m:"M1", t:"Lab 1", q:"Which shortcut key runs the program without debugging? (Debug > Start without debugging)", a:["ctrl+f5","ctrl f5","ctrl + f5"], d:"Ctrl + F5", e:"Exercise 1, part C."},
+{ty:"mcq", m:"M1", t:"Lab 1", q:"In the Create a New Project dialog, which project type do you choose?", o:["Console App","Windows Forms App","Class Library","Empty Web Project"], e:"Exercise 1: set Language to C++, Platform to Windows, Project type to Console, then choose Console App."},
+{ty:"mcq", m:"M1", t:"Lab 1", code:FUN1, q:"fun1.cpp: what is displayed when the user enters 1981?", o:["1981 is not a leap year.","1981 is a leap year.","Nothing is displayed","A compile error"], e:"1981 % 4 is 1, not 0, so the outer else runs."},
+{ty:"mcq", m:"M1", t:"Lab 1", code:FUN1, q:"fun1.cpp: what is displayed when the user enters 2020?", o:["2020 is a leap year.","2020 is not a leap year.","2020 is not a leap year. 2020 is a leap year.","Nothing is displayed"], e:"2020 % 4 == 0 and 2020 % 100 is 20 (not 0), so the inner else prints 'is a leap year.'"},
+{ty:"id", m:"M1", t:"Lab 1", code:FUN1, q:"fun1.cpp: the user enters 1900. Does it print 'leap' or 'not a leap' year? Type leap or not.", a:["not","not a leap year","not leap"], d:"Not a leap year", e:"1900 % 4 == 0, 1900 % 100 == 0, but 1900 % 400 is 300, so it is not a leap year."},
+{ty:"id", m:"M1", t:"Lab 1", code:FUN1, q:"fun1.cpp: the user enters 2000. Type 'leap' or 'not' for the result.", a:["leap","leap year","a leap year"], d:"Leap year", e:"2000 is divisible by 4, 100 and 400."},
+{ty:"id", m:"M1", t:"Lab 1", code:FUN2, q:"fun2.cpp: what is the reverse of the number that is displayed when the user enters 1231?", a:["1321"], d:"1321", e:"The digits 1, 3, 2, 1 are peeled off from the end: rev becomes 1, 13, 132, 1321. 1231 is not equal to 1321, so it is not a palindrome."},
+{ty:"mcq", m:"M1", t:"Lab 1", code:FUN2, q:"fun2.cpp: what does the program print last when the user enters 23432?", o:["The number is a palindrome.","The number is not a palindrome.","The reverse is 23432 and then an error","Nothing"], e:"The reverse of 23432 is 23432, so n == rev."},
+{ty:"id", m:"M1", t:"Lab 1", code:FUN2, q:"fun2.cpp: the user enters 120. What reverse value is displayed?", a:["21"], d:"21", e:"digit 0 gives rev 0, digit 2 gives rev 2, digit 1 gives rev 21. The leading zero of the reversed number disappears."},
+{ty:"id", m:"M1", t:"Lab 1", q:"What two things do fun1.cpp and fun2.cpp respectively check? Type the one fun2.cpp checks.", a:["palindrome","palindrome number","palindromic"], d:"Whether the number is a palindrome (fun1 checks for a leap year)", e:"fun1: leap year. fun2: reverses a number and checks if it is a palindrome."},
+{ty:"id", m:"M1", t:"Lab 1", code:TRY, q:"try.cpp (Activity 1.2): which line has a syntax error because the # is missing?", a:["1","line 1"], d:"Line 1", e:"It should be #include <iostream>."},
+{ty:"id", m:"M1", t:"Lab 1", code:TRY, q:"try.cpp: which line is missing a semicolon?", a:["5","line 5"], d:"Line 5", e:"int n1,n2,s needs a semicolon at the end."},
+{ty:"id", m:"M1", t:"Lab 1", code:TRY, q:"try.cpp: which line uses the wrong operator for input (<< instead of >>)?", a:["7","line 7"], d:"Line 7", e:"It should be cin >> n1;"},
+{ty:"id", m:"M1", t:"Lab 1", code:TRY, q:"try.cpp: which line contains the LOGICAL error?", a:["10","line 10"], d:"Line 10", e:"s=n1-n2; subtracts, but the program should add. The fix is s=n1+n2;"},
+{ty:"id", m:"M1", t:"Lab 1", code:TRY, q:"After the syntax errors are fixed, the user types 10 and 5. What number is shown after 'is:' ?", a:["5"], d:"5", e:"s = 10 - 5 = 5. The program runs but the result is wrong for an addition program."},
+{ty:"id", m:"M1", t:"Lab 1", code:TRY, q:"After changing s=n1-n2; to s=n1+n2; the user types 10 and 5. What number is shown?", a:["15"], d:"15"},
+{ty:"mcq", m:"M1", t:"Lab 1", q:"In Exercise 1's Q&A, how do you correct a syntax error versus a logical error?", o:["Fix the statement so it follows the language rules (syntax error); fix the formula or logic so it gives correct results (logical error)","Both are fixed by changing the compiler","Syntax errors are ignored; logical errors stop the build","Both are fixed by adding comments"], e:"A syntax error breaks the language's rules. A logical error runs but gives incorrect or unexpected behavior."},
+{ty:"order", m:"M1", t:"Lab 1", q:"Activity 1.3, Problem 1 (digits): arrange the blocks to read a 3-digit number and display its hundreds, tens and ones digits.", blocks:["#include<iostream>\nusing namespace std;","int main()\n{\n  int number, hundreds, tens, ones;\n  cout << \"Enter a 3-digit number:\";\n  cin >> number;","  hundreds = number / 100;\n  number = number % 100;","  tens = number / 10;\n  ones = number % 10;","  cout << \"Hundreds digit: \" << hundreds << endl;\n  cout << \"Tens digit: \" << tens << endl;\n  cout << \"Ones digit: \" << ones << endl;","  return 0;\n}"], e:"Includes, main with declarations and input, then hundreds, then tens and ones, then output, then return 0 and the closing brace."},
+{ty:"id", m:"M1", t:"Lab 1", q:"Activity 1.3, Problem 1: if the user enters 275, what is the tens digit displayed?", a:["7"], d:"7", e:"hundreds = 275/100 = 2; number = 275%100 = 75; tens = 75/10 = 7; ones = 75%10 = 5."},
+{ty:"order", m:"M1", t:"Lab 1", q:"Activity 1.3, Problem 2 (swap): arrange the blocks so the program swaps the two numbers entered by the user.", blocks:["#include<iostream>\nusing namespace std;","int main()\n{\n  int a, b, c;","  cout << \"Enter value of a: \";\n  cin >> a;\n  cout << \"Enter value of b: \";\n  cin >> b;","  c = a;","  a = b;","  b = c;","  cout << \"After swaping a: \" << a << \" b: \" << b;\n  return 0;\n}"], e:"c temporarily holds a, then a takes b, then b takes the saved value from c."},
+{ty:"mcq", m:"M1", t:"Lab 1", q:"In the swap program, why is the extra variable c needed?", o:["It temporarily holds one value so it is not overwritten","It stores the sum of a and b","It counts the number of swaps","It is required by the compiler for every program"], e:"Without c, a = b; would destroy the original value of a."},
+{ty:"tf", m:"M1", t:"Lab 1", q:"In the swap program, writing a = b; before c = a; would still swap the numbers correctly.", a:false, e:"After a = b, the original a is lost. c = a would then copy b, so nothing is swapped."},
+{ty:"id", m:"M1", t:"Lab 1", q:"In the swap program, the user enters a = 3 and b = 8. What value is displayed for a after swapping?", a:["8"], d:"8"},
+{ty:"id", m:"M1", t:"Lab 1", q:"In Activity 1.3, Problem 3 (leap), the block 'if ((year % 4) == 0)' tests that the year is divisible by what number?", a:["4"], d:"4"},
+{ty:"tf", m:"M1", t:"Lab 1", q:"Syntax errors are found when you build the project, while logical errors are found by checking the output against the expected result.", a:true, e:"The compiler reports syntax errors. A logical error only shows up as a wrong output, like try.cpp printing 5 instead of 15."},
+
+/* ================= EXERCISE 2: Program logic design and formulation (M2) ================= */
+{ty:"mcq", m:"M2", t:"Lab 2", q:"In Exercise 2, how is a pseudocode program name written?", o:["In CamelCase, e.g. ComputeAreaOfRectangle","In lowercase with spaces","All uppercase","In snake_case"], e:"CamelCase capitalizes the first letter of every word, including the first. The pseudocode header is PROGRAM <ProgramName>:"},
+{ty:"id", m:"M2", t:"Lab 2", q:"In the Exercise 2 pseudocode format, which keyword ends the pseudocode?", a:["end"], d:"END", e:"General structure: PROGRAM <ProgramName>: ... END"},
+{ty:"id", m:"M2", t:"Lab 2", q:"Exercise 2 defines this as a graphical representation of an algorithm.", a:["flowchart","flow chart"], d:"Flowchart"},
+{ty:"order", m:"M2", t:"Lab 2", q:"Arrange the pseudocode that calculates the average of three numbers then displays the result.", blocks:["PROGRAM ComputeAverage:","  INPUT x","  INPUT y","  INPUT z","  sum = x + y + z","  avg = sum / 3.0","  PRINT avg","END"], e:"Exercise 2 example."},
+{ty:"id", m:"M2", t:"Lab 2", q:"ComputeAverage pseudocode with x = 2, y = 4, z = 9. What does it print?", a:["5","5.0"], d:"5", e:"sum = 15, avg = 15 / 3.0 = 5."},
+{ty:"order", m:"M2", t:"Lab 2", q:"Activity 2.1, Problem 1: arrange the pseudocode that computes the volume of a rectangular prism.", blocks:["ENTER length, width, height","COMPUTE volume := length x width x height","DISPLAY volume"], e:"Input, then process, then output."},
+{ty:"order", m:"M2", t:"Lab 2", q:"Activity 2.1, Problem 2: arrange the pseudocode that determines whether the number entered is odd.", blocks:["ENTER number","IF num mod 2 = 1","THEN DISPLAY \"It is odd.\"","ELSE DISPLAY \"It is not odd.\"","ENDIF"], e:"The IF test comes after the input, THEN and ELSE follow, and ENDIF closes the structure."},
+{ty:"id", m:"M2", t:"Lab 2", q:"Using the odd/not odd pseudocode, what is displayed when the number is 12? (Type the message.)", a:["it is not odd","it is not odd.","not odd"], d:"It is not odd.", e:"12 mod 2 = 0, which is not 1."},
+{ty:"order", m:"M2", t:"Lab 2", q:"Activity 2.1, Problem 3: arrange the pseudocode that prints the numbers 10 down to 1 using WHILE.", blocks:["SET number = 10","WHILE number >= 1","  PRINT number","  DECREMENT number","ENDWHILE"], e:"Initialize, test, body (print then decrement), ENDWHILE."},
+{ty:"id", m:"M2", t:"Lab 2", q:"In the descending WHILE pseudocode, how many numbers are printed?", a:["10","ten"], d:"10", e:"number goes 10, 9, ..., 1, then 0 fails number >= 1."},
+{ty:"mcq", m:"M2", t:"Lab 2", q:"In the descending WHILE pseudocode, what happens if DECREMENT number is left out?", o:["The loop never ends, because number stays at 10","It prints 1 only","It prints nothing","It prints 10 once"], e:"number >= 1 stays true, giving an infinite loop."},
+{ty:"id", m:"M2", t:"Lab 2", q:"Activity 2.2: pay = hours * rate. An employee works 8 hours at a rate of 150. What is the pay?", a:["1200"], d:"1200"},
+{ty:"id", m:"M2", t:"Lab 2", q:"Activity 2.3 (overtime): rate = 100 per hour and the employee worked 45 hours. Hours over 40 are paid 1.5 times the rate. What is the pay?", a:["4750","4750.0"], d:"4750", e:"40 x 100 = 4000, plus 5 x (100 x 1.5) = 750, total 4750."},
+{ty:"id", m:"M2", t:"Lab 2", q:"Activity 2.3: rate = 80 and the employee worked 38 hours. What is the pay?", a:["3040","3040.0"], d:"3040", e:"38 is not more than 40, so there is no overtime: 38 x 80 = 3040."},
+{ty:"mcq", m:"M2", t:"Lab 2", q:"In Activity 2.3, which flowchart symbol separates the pay for hours <= 40 from the pay for hours > 40?", o:["Decision (diamond)","Process (rectangle)","Terminal (oval)","On-page connector (circle)"], e:"The branch is a selection, drawn with a decision symbol."},
+{ty:"id", m:"M2", t:"Lab 2", q:"Activity 2.4: which operator gets the remainder when dividing two numbers? (the 'clue')", a:["mod","modulo","modulus"], d:"mod", e:"A number is odd when number mod 2 = 1."},
+{ty:"id", m:"M2", t:"Lab 2", q:"Activity 2.4 prints all odd numbers from 1 to 20. How many numbers are printed?", a:["10","ten"], d:"10", e:"1, 3, 5, ..., 19."},
+{ty:"id", m:"M2", t:"Lab 2", q:"Activity 2.4: what is the last number printed?", a:["19"], d:"19"},
+{ty:"mcq", m:"M2", t:"Lab 2", q:"Exercise 2 Q&A: what is the difference between a flowchart and a pseudocode?", o:["A flowchart is a graphical representation of an algorithm using symbols, while pseudocode describes it with English words and has no real syntax rules","A flowchart is compiled, pseudocode is interpreted","Pseudocode uses symbols, flowcharts use words","There is no difference"], e:"Both express an algorithm. Pseudocode cannot be compiled or executed."},
+{ty:"tf", m:"M2", t:"Lab 2", q:"There can be different correct algorithms for solving the same problem.", a:true, e:"The Q&A asks this. For example, a count-down can use WHILE, FOR or DO \u2026 WHILE."},
+{ty:"mcq", m:"M2", t:"Lab 2", q:"Which is a common error in making a flowchart (Exercise 2 Q&A)?", o:["Using the wrong symbol, such as a rectangle for a decision","Using START and END","Drawing flow lines with arrows","Labeling the steps"], e:"Other common errors: more than one flow line leaving a process symbol, crossing flow lines, missing a start or finish."},
+
+/* ================= EXERCISE 3: Introduction to C++ programming (M3) ================= */
+{ty:"mcq", m:"M3", t:"Lab 3", q:"In the required structure int main(void){ //optional declaration list //optional statement list return 0; }, which parts are optional?", o:["The declaration list and the statement list","The braces","main","return 0 and the braces"], e:"Exercise 3 background."},
+{ty:"id", m:"M3", t:"Lab 3", code:"cout << \"Hello! \";  // says Hello!\ncout << \"I'm a C++ program\"; /* says I'm a C++ program*/", q:"What is displayed on the screen? (the comments are ignored)", a:["hello! i'm a c++ program","hello i'm a c++ program","hello! im a c++ program"], d:"Hello! I'm a C++ program", e:"Comments are ignored by the compiler. The two cout statements print on the same line."},
+{ty:"mcq", m:"M3", t:"Lab 3", q:"What does a function prototype provide?", o:["The name and arguments of the function, and it must appear before the function is used","The body of the function","A comment about the function","A variable of type void"], e:"Exercise 3: e.g. void area(int l, int w);"},
+{ty:"mcq", m:"M3", t:"Lab 3", q:"In Exercise 3, an expression is:", o:["Anything that evaluates to a numeric value (the simplest is a single variable, literal constant or symbolic constant)","A complete direction instructing the computer to carry out a task","A name given to a data storage location","A line starting with #"], e:"A statement is the complete direction instructing the computer to carry out some task."},
+{ty:"mcq", m:"M3", t:"Lab 3", q:"What does '#define size 5' do?", o:["Substitutes 5 for the identifier size each time it is encountered in the source file","Declares an int variable named size","Creates a function named size","Includes a header file"], e:"Exercise 3, #define directive."},
+{ty:"mcq", m:"M3", t:"Lab 3", q:"Activity 3.1 (class schedule in a listed view): which escape sequence helps line up the columns Day, Time, Course Code, Section, Room?", o:["\\t","\\a","\\b","\\\\"], e:"\\t is a horizontal tab. \\n ends each row."},
+{ty:"mcq", m:"M3", t:"Lab 3", q:"Activity 3.2: which declaration matches 'Letter, character, a'?", o:["char Letter = 'a';","char Letter = \"a\";","int Letter = a;","string Letter = 'a';"], e:"A character constant uses single quotes."},
+{ty:"mcq", m:"M3", t:"Lab 3", q:"Activity 3.2: which declaration matches 'Result, boolean, true'?", o:["bool Result = true;","boolean Result = true;","int Result = \"true\";","char Result = true;"], e:"The keyword is bool."},
+{ty:"id", m:"M3", t:"Lab 3", code:"bool Result = true;\ncout << Result;", q:"What does this print on the screen? (a bool true prints as a number by default)", a:["1"], d:"1", e:"By default cout prints true as 1 and false as 0."},
+{ty:"mcq", m:"M3", t:"Lab 3", q:"Activity 3.2: which declaration matches 'Float, float, 3.14'?", o:["float Float = 3.14;","float Float = '3.14';","char Float = 3.14;","int Float = 3.14;"], e:"An int would drop the decimals. float is the matching data type."},
+{ty:"id", m:"M3", t:"Lab 3", q:"Activity 3.3: the user enters 17 and 5 (integers). What is the remainder?", a:["2"], d:"2", e:"17 % 5 = 2."},
+{ty:"id", m:"M3", t:"Lab 3", q:"Activity 3.3: with 17 and 5 as integers, what is the quotient displayed?", a:["3"], d:"3", e:"Integer division: 17 / 5 = 3."},
+{ty:"id", m:"M3", t:"Lab 3", q:"Activity 3.3: with 17 and 5, what are the sum and the difference? Type the sum.", a:["22"], d:"22 (difference is 12)", e:"17 + 5 = 22 and 17 - 5 = 12. The product is 85."},
+{ty:"mcq", m:"M3", t:"Lab 3", q:"Activity 3.4: 1.000 US Dollar equals Php 43.33089. How do you convert a peso amount to US Dollars?", o:["Divide the peso amount by 43.33089","Multiply the peso amount by 43.33089","Subtract 43.33089 from the peso amount","Add 43.33089 to the peso amount"], e:"With 43.33089 pesos entered, the sample output shows US Dollar 1.000."},
+{ty:"id", m:"M3", t:"Lab 3", q:"Activity 3.4: the user enters 86.66178 pesos. How many US Dollars is that?", a:["2","2.0","2.000"], d:"2.000", e:"86.66178 / 43.33089 = 2."},
+{ty:"id", m:"M3", t:"Lab 3", q:"Activity 3.4: the user enters 86.66178 pesos. How many Euro (1 USD = 0.734719 Euro)?", a:["1.469438"], d:"1.469438", e:"2 USD x 0.734719 = 1.469438."},
+{ty:"mcq", m:"M3", t:"Lab 3", q:"Exercise 3 Q&A: what is the difference between % and / as arithmetic operators?", o:["% gives the remainder of a division, while / gives the quotient","% gives the quotient, / gives the remainder","Both give the remainder","% is for decimals, / is for integers only"], e:"5 % 2 = 1 and 5 / 2 = 2."},
+{ty:"mcq", m:"M3", t:"Lab 3", q:"Exercise 3 Q&A: what is the difference between relational and logical operators, and can they be combined?", o:["Relational operators compare values; logical operators combine or complement conditions. They can be combined into more complex conditions","They are the same thing","Logical operators compare values; relational operators combine conditions. They cannot be combined","Only relational operators produce true or false"], e:"Example: (a > 5) && (b < 10)."},
+{ty:"mcq", m:"M3", t:"Lab 3", q:"Exercise 3 Q&A: why is main() important?", o:["The body of any C++ program always begins with main, and every program must have exactly one","It is only for comments","It stores variables","It is optional"], e:"Exercise 3, part C."},
+
+/* ================= EXERCISE 4: Basic input output statement (M4) ================= */
+{ty:"mcq", m:"M4", t:"Lab 4", q:"Activity 4.1 (hypotenuse): the entry of data should accept sides with decimal portions. Which data type should the sides be?", o:["float or double","int","char","bool"], e:"An int would not hold decimals."},
+{ty:"mcq", m:"M4", t:"Lab 4", q:"Activity 4.1: which expression computes the hypotenuse c from sides a and b?", o:["sqrt(pow(a, 2) + pow(b, 2))","pow(sqrt(a) + sqrt(b), 2)","sqrt(a) + sqrt(b)","a * a + b * b"], e:"c = square root of (a squared plus b squared). Include math.h for pow and sqrt."},
+{ty:"id", m:"M4", t:"Lab 4", q:"Activity 4.1: sides a = 3 and b = 4. What is the hypotenuse?", a:["5","5.0"], d:"5"},
+{ty:"id", m:"M4", t:"Lab 4", code:PAY, q:"Activity 4.2: what is the hourly rate?", a:["75","75.0","75.00"], d:"75", e:"18000 / 30 = 600, then 600 / 8 = 75."},
+{ty:"id", m:"M4", t:"Lab 4", code:PAY, q:"Activity 4.2: what is the lates and absences deduction (amount)?", a:["37.5","37.50"], d:"37.50", e:"30 minutes / 60 = 0.5 hour, then 0.5 x 75 = 37.50."},
+{ty:"id", m:"M4", t:"Lab 4", code:PAY, q:"Activity 4.2: what is the withholding tax?", a:["2160","2160.0","2160.00"], d:"2160.00", e:"12% of 18000 = 2160."},
+{ty:"id", m:"M4", t:"Lab 4", code:PAY, q:"Activity 4.2: what are the total deductions?", a:["5197.5","5197.50"], d:"5197.50", e:"37.50 + 1000 + 800 + 1200 + 2160 = 5197.50."},
+{ty:"id", m:"M4", t:"Lab 4", code:PAY, q:"Activity 4.2: what is the net pay?", a:["12802.5","12802.50"], d:"12802.50", e:"18000 - 5197.50 = 12802.50."},
+{ty:"id", m:"M4", t:"Lab 4", q:"Activity 4.2 with a monthly salary of 24000 and 60 minutes of lates for the month. What is the net pay? (Hourly rate = salary / 30 / 8; Philhealth 1000, Pag-ibig 800, SSS 1200; tax 12% of salary.)", a:["18020","18020.0","18020.00"], d:"18020.00", e:"Rate 100. Lates 1 hour = 100. Tax = 2880. Deductions = 100 + 1000 + 800 + 1200 + 2880 = 5980. Net = 24000 - 5980 = 18020."},
+{ty:"mcq", m:"M4", t:"Lab 4", q:"In Activity 4.2, why should the hourly rate be computed with float or double values?", o:["Integer division drops the decimals, so a salary that does not divide evenly would lose its fractions","float is faster than int","int cannot store 18000","The compiler requires it"], e:"Salary and rates can produce fractional values. Use float or double so the decimals are kept."},
+{ty:"mcq", m:"M4", t:"Lab 4", q:"Activity 4.3: which expression solves side c from sides a, b and angle C (law of cosines)?", o:["sqrt(a*a + b*b - 2*a*b*cos(C))","sqrt(a*a + b*b + 2*a*b*cos(C))","a*a + b*b - 2*a*b*cos(C)","sqrt(a + b - 2*a*b*cos(C))"], e:"c\u00b2 = a\u00b2 + b\u00b2 - 2ab cos C, so c is the square root of that."},
+{ty:"tf", m:"M4", t:"Lab 4", q:"The cos(), sin() and tan() functions take their argument in degrees.", a:false, e:"The value of arg must be in radians."},
+{ty:"id", m:"M4", t:"Lab 4", q:"Activity 4.3: a = 3, b = 4 and angle C = 90 degrees. What is side c? (cos 90\u00b0 = 0)", a:["5","5.0"], d:"5", e:"c\u00b2 = 9 + 16 - 0 = 25, so c = 5."},
+{ty:"mcq", m:"M4", t:"Lab 4", q:"Which header files do you need for pow, sqrt and cos?", o:["math.h","iomanip","string","conio.h"], e:"The math functions are part of math.h. setw and setprecision need iomanip."},
+{ty:"mcq", m:"M4", t:"Lab 4", q:"What do ceil(1.03) and ceil(-1.03) give?", o:["2.0 and -1.0","1.0 and -2.0","2.0 and -2.0","1.0 and -1.0"], e:"Exercise 4 math table: ceil is the smallest integer not less than num."},
+{ty:"mcq", m:"M4", t:"Lab 4", q:"What do floor(1.03) and floor(-1.03) give?", o:["1.0 and -2.0","2.0 and -1.0","1.0 and -1.0","2.0 and -2.0"], e:"floor is the largest integer not greater than num."},
+{ty:"id", m:"M4", t:"Lab 4", q:"What does pow(3.0, 0) give?", a:["1","1.0"], d:"1", e:"Any base raised to the power 0 is 1."},
+{ty:"mcq", m:"M4", t:"Lab 4", q:"When does sqrt() cause a domain error?", o:["When the number is less than 0","When the number is 0","When the number is a decimal","When the number is greater than 100"], e:"Exercise 4: if num < 0, a domain error occurs."},
+{ty:"mcq", m:"M4", t:"Lab 4", q:"When does pow() cause a domain error?", o:["If base = 0 and exp <= 0, or if base < 0 and exp is not an integer","If the base is 10","If the exponent is 2","If either argument is a double"], e:"Exercise 4 math table."},
+{ty:"mcq", m:"M4", t:"Lab 4", q:"exp(2.0) gives the value of:", o:["e squared","2 squared","The natural logarithm of 2","2 times e"], e:"exp() returns e raised to the arg power."},
+{ty:"mcq", m:"M4", t:"Lab 4", code:"cout << \"First sentence.\\n\";\ncout << \"Second sentence.\\nThird sentence.\";", q:"How many lines of output does this produce?", o:["3","2","1","4"], e:"Each \\n breaks the line, so there are three lines."},
+{ty:"id", m:"M4", t:"Lab 4", q:"The statement cin >> a >> b; is equivalent to cin >> a; followed by which statement?", a:["cin >> b;","cin >> b","cin>>b"], d:"cin >> b;"},
+{ty:"id", m:"M4", t:"Lab 4", code:"cout << setw(8) << 22 << \"\\n\";\ncout << setw(8) << 4444 << \"\\n\";\ncout << setw(8) << 666666 << endl;", q:"How many blank spaces appear before 4444?", a:["4","four"], d:"4", e:"The field is 8 wide and 4444 takes 4 characters, so there are 4 spaces. 22 has 6 spaces and 666666 has 2."},
+{ty:"id", m:"M4", t:"Lab 4", code:"cout << setw(8) << 22 << \"\\n\";\ncout << setw(8) << 4444 << \"\\n\";\ncout << setw(8) << 666666 << endl;", q:"How many blank spaces appear before 666666?", a:["2","two"], d:"2"},
+{ty:"tf", m:"M4", t:"Lab 4", q:"setw() sticks from one cout statement to the next, so you only write it once for a column of numbers.", a:false, e:"setw() does not stick. You must repeat it for each value. setprecision() is the one that is sticky."},
+{ty:"tf", m:"M4", t:"Lab 4", q:"setprecision() is sticky: the precision stays until you change it with another setprecision().", a:true, e:"Exercise 4."},
+{ty:"id", m:"M4", t:"Lab 4", q:"Exercise 4: which ios flag is set with cout.setf(ios::fixed); to make setprecision() count decimal places?", a:["fixed","ios::fixed"], d:"fixed (ios::fixed)"},
+{ty:"id", m:"M4", t:"Lab 4", q:"Exercise 4: which format option shows the decimal point and trailing zeros, e.g. to display 5.8 as 5.80 together with fixed and setprecision(2)?", a:["showpoint"], d:"showpoint"},
+{ty:"mcq", m:"M4", t:"Lab 4", q:"Exercise 4 Q&A: why format the presentation of numbers in the output?", o:["So the output screen can be easily read and understood","To make the program run faster","Because the compiler requires it","To avoid using cout"], e:"Formatting output is important in developing a readable output screen."},
+{ty:"mcq", m:"M4", t:"Lab 4", q:"Exercise 4 Q&A: why are readily available mathematics functions important?", o:["They save time and give reliable results without writing the formulas yourself","They make programs shorter by removing variables","They remove the need for a compiler","They only work for integers"], e:"They are ready-made, tested routines (pow, sqrt, ceil, floor...)."}
+];
+const TOPICMOD = {
+  "Intro":"M1","Terms":"M1","Translators":"M1","Languages":"M1","Paradigms":"M1","PDLC":"M1","Testing":"M1",
+  "Algorithm":"M2","Pseudocode":"M2","Control":"M2","Flowchart":"M2","C++ code":"M2",
+  "C++ basics":"M3","Preprocessor":"M3","Identifiers":"M3","Variables":"M3","Data types":"M3","Constants":"M3","Operators":"M3","Bitwise":"M3",
+  "Output":"M4","Input":"M4","Escape codes":"M4","Type conversion":"M4","Math functions":"M4","Formatting":"M4"
+};
+function tag(arr,ty){ return arr.map(function(q){ return Object.assign({}, q, {ty:q.ty||ty, m:q.m||TOPICMOD[q.t]||"M1"}); }); }
+const LEVELS = [
+  {id:1, k:"Level 1", name:"Multiple choice", note:"Warm-up", data:tag(MCQ,"mcq").concat(tag(MCQ34,"mcq"))},
+  {id:2, k:"Level 2", name:"Hard true or false", note:"Tricky wording", data:tag(TF,"tf").concat(tag(TF34,"tf"))},
+  {id:3, k:"Level 3", name:"Super hard identification", note:"Type the answer", data:tag(IDQ,"id").concat(tag(IDQ34,"id"))},
+  {id:4, k:"Level 4", name:"Technical activities", note:"Lab sheets 1 to 4", data:tag(TECH,"mcq")}
+];
+const SYMS = {
+  hex:'<polygon points="30,35 45,10 75,10 90,35 75,60 45,60"/>',
+  dia:'<polygon points="60,6 102,35 60,64 18,35"/>',
+  oval:'<ellipse cx="60" cy="35" rx="44" ry="24"/>',
+  rect:'<rect x="16" y="10" width="88" height="50"/>',
+  para:'<polygon points="34,10 108,10 86,60 12,60"/>',
+  circ:'<circle cx="60" cy="35" r="24"/>',
+  pent:'<polygon points="38,8 82,8 82,46 60,62 38,46"/>',
+  flow:'<path class="ln" d="M44 62V14M76 8v48"/><path class="hd" d="M44 8l-7 11h14zM76 62l-7-11h14z"/>'
+};
+function symSVG(k){ return '<svg class="sym" viewBox="0 0 120 70" role="img" aria-label="Flowchart symbol">'+SYMS[k]+'</svg>'; }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+/* ---------- answer matching for typed answers ---------- */
+function norm(s){
+  s = String(s).toLowerCase().replace(/!=/g,' not equal ').replace(/[?!.]+\s*$/,'');
+  s = s.replace(/(^|[^a-z])-/g,function(m,p){return p+'\u0001';}).replace(/-/g,' ').replace(/\u0001/g,'-');
+  s = s.replace(/[–—_]/g,' ').replace(/[…,;'"“”‘’]/g,' ');
+  s = s.replace(/(?<!\d)\.|\.(?!\d)/g,' ');
+  s = s.replace(/[^a-z0-9 :=<>≠≤≥←+×*\/()\-.&|^~%\\#?{}\[\]]/g,' ');
+  return s.replace(/\s+/g,' ').trim();
+}
+function lev(a,b){
+  const m=a.length,n=b.length; if(!m) return n; if(!n) return m;
+  let prev=[]; for(let j=0;j<=n;j++) prev[j]=j;
+  for(let i=1;i<=m;i++){
+    const cur=[i];
+    for(let j=1;j<=n;j++){
+      cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    }
+    prev=cur;
+  }
+  return prev[n];
+}
+function matches(user, alts){
+  const raw=String(user).trim().toLowerCase(); if(!raw) return false;
+  const nu=norm(user), su=nu.replace(/ /g,'');
+  for(const a of alts){
+    if(raw===String(a).toLowerCase()) return true;
+    const na=norm(a), sa=na.replace(/ /g,'');
+    if(!nu||!na) continue;
+    if(nu===na||su===sa) return true;
+    if(/\d/.test(sa)) continue;
+    if(na.length>=4 && (' '+nu+' ').indexOf(' '+na+' ')>-1) return true;
+    const tol = sa.length<=4?0:(sa.length<=20?1:2);
+    if(tol && lev(su,sa)<=tol) return true;
+  }
+  return false;
+}
+
+/* ---------- state ---------- */
+let S=null;
+const stage=document.getElementById('stage');
+const levelsEl=document.getElementById('levels');
+const optShuffle=document.getElementById('optShuffle');
+const optQuick=document.getElementById('optQuick');
+const modBoxes=Array.prototype.slice.call(document.querySelectorAll('input[data-mod]'));
+
+function activeMods(){ return modBoxes.filter(function(b){return b.checked;}).map(function(b){return b.getAttribute('data-mod');}); }
+function allMods(){ return activeMods().length===modBoxes.length; }
+function bestGet(id){ try{ const v=localStorage.getItem('cp1mq-best-'+id); return v===null?null:Number(v); }catch(e){ return null; } }
+function bestSet(id,pc){ try{ const old=bestGet(id); if(old===null||pc>old) localStorage.setItem('cp1mq-best-'+id,String(pc)); }catch(e){} }
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function countFor(L){ const m=activeMods(); return L.data.filter(function(q){return m.indexOf(q.m)>-1;}).length; }
+
+function renderLevels(){
+  levelsEl.innerHTML = LEVELS.map(function(L){
+    const b=bestGet(L.id), n=countFor(L);
+    return '<button type="button" class="lv" data-act="start" data-lv="'+L.id+'" aria-pressed="'+(S&&S.lv.id===L.id?'true':'false')+'">'+
+      '<span class="k">'+L.k+' · '+L.note+'</span><span class="n">'+L.name+'</span>'+
+      '<span class="m">'+n+' questions'+(b!==null?' · best '+b+'%':'')+'</span></button>';
+  }).join('');
+}
+
+function start(lvId, subsetIdx){
+  const L = LEVELS.filter(function(x){return x.id===lvId;})[0];
+  const mods = activeMods();
+  let idxs;
+  if(subsetIdx) idxs = subsetIdx.slice();
+  else idxs = L.data.map(function(_,i){return i;}).filter(function(i){ return mods.indexOf(L.data[i].m)>-1; });
+  if(!idxs.length){ S=null; renderLevels(); stage.innerHTML='<div class="home"><p>No questions match the modules you selected. Tick at least one module above.</p></div>'; return; }
+  let full = !subsetIdx && allMods();
+  if(!subsetIdx && optQuick.checked){ idxs = shuffle(idxs).slice(0,25); full=false; }
+  else if(optShuffle.checked){ idxs = shuffle(idxs); }
+  const items = idxs.map(function(i){
+    const q = L.data[i];
+    const it = {src:i, q:q, ty:q.ty};
+    if(q.ty==='mcq') it.opts = shuffle(q.o.map(function(t,k){return {t:t, ok:k===0};}));
+    if(q.ty==='order'){
+      const n=q.blocks.length; let pool=shuffle(q.blocks.map(function(_,k){return k;}));
+      let guard=0; while(n>1 && guard<20 && pool.every(function(v,k){return v===k;})){ pool=shuffle(pool); guard++; }
+      it.pool=pool; it.seq=[];
+    }
+    return it;
+  });
+  S = {lv:L, items:items, i:0, ans:items.map(function(){return null;}), done:false, full:full};
+  renderLevels(); render(true);
+}
+
+/* ---------- rendering ---------- */
+function render(scroll){
+  if(!S) stage.innerHTML = homeHTML();
+  else stage.innerHTML = S.done ? resultHTML() : quizHTML();
+  if(scroll){ try{ stage.scrollIntoView({block:'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); }catch(e){} }
+  const inp=document.getElementById('idans'); if(inp && !inp.disabled && scroll) { try{ inp.focus({preventScroll:true}); }catch(e){} }
+}
+function homeHTML(){
+  const groups = [
+    ['M1',['Intro','Terms','Translators','Languages','Paradigms','PDLC','Testing']],
+    ['M2',['Algorithm','Pseudocode','Control','Flowchart','C++ code']],
+    ['M3',['C++ basics','Preprocessor','Identifiers','Variables','Data types','Constants','Operators','Bitwise']],
+    ['M4',['Input','Output','Escape codes','Type conversion','Math functions','Formatting']]
+  ];
+  return '<div class="home"><p>Pick a level above to begin. You get feedback and the reason after every answer, and a topic breakdown at the end so you can see which part to review. Use the module boxes to test only M1 to M2, only M3 to M4, or any mix.</p>'+
+    '<p>Level 4 is separate: it follows your technical (lab) activities. You trace code, find errors, work out outputs and arrange code blocks in order.</p>'+
+    groups.map(function(g){ return '<p class="lab">'+g[0]+'</p><div class="cov">'+g[1].map(function(t){return '<span class="chip">'+t+'</span>';}).join('')+'</div>'; }).join('')+'</div>';
+}
+function orderBody(it,a){
+  const q=it.q, n=q.blocks.length;
+  const seq = a ? a.seq : it.seq;
+  let h='';
+  if(!a) h+='<p class="hint">Tap the blocks in the order they should appear. Tap a placed block to take it back.</p>';
+  h+='<p class="lab">'+(a?'Your order':'Your order ('+seq.length+' of '+n+' placed)')+'</p><ol class="seq">';
+  if(!seq.length) h+='<li><span class="empty">Nothing placed yet.</span></li>';
+  seq.forEach(function(b,p){
+    let cls='blk placed'; if(a) cls='blk '+(b===p?'ok':'no');
+    h+='<li><span class="n">'+(p+1)+'</span><button type="button" class="'+cls+'" data-act="unplace" data-p="'+p+'"'+(a?' disabled':'')+'><pre>'+esc(q.blocks[b])+'</pre></button></li>';
+  });
+  h+='</ol>';
+  if(!a){
+    const left = it.pool.filter(function(b){return seq.indexOf(b)<0;});
+    if(left.length){ h+='<p class="lab">Blocks left</p><div class="pool">'+left.map(function(b){ return '<button type="button" class="blk" data-act="place" data-b="'+b+'"><pre>'+esc(q.blocks[b])+'</pre></button>'; }).join('')+'</div>'; }
+    h+='<div class="row"><button type="button" class="btn" data-act="checkorder"'+(seq.length===n?'':' disabled')+'>Check order</button><button type="button" class="btn ghost" data-act="resetorder">Reset</button><button type="button" class="btn ghost" data-act="giveup">Show answer</button></div>';
+  } else {
+    h+='<p class="lab">Correct order</p><ol class="seq">'+q.blocks.map(function(b,p){ return '<li><span class="n">'+(p+1)+'</span><div class="blk"><pre>'+esc(b)+'</pre></div></li>'; }).join('')+'</ol>';
+  }
+  return h;
+}
+function quizHTML(){
+  const L=S.lv, it=S.items[S.i], q=it.q, a=S.ans[S.i], n=S.items.length, ty=it.ty;
+  const answered = S.ans.filter(Boolean).length;
+  const right = S.ans.filter(function(x){return x&&x.ok;}).length;
+  let h='<div class="card">';
+  h+='<div class="bar"><span><b>'+L.k+'</b> · '+L.name+'</span><span>Question <b>'+(S.i+1)+'</b> of '+n+' · score <b>'+right+'</b>/'+answered+'</span></div>';
+  h+='<div class="prog" aria-hidden="true"><i style="width:'+Math.round(answered/n*100)+'%"></i></div>';
+  h+='<div><span class="chip">'+esc(q.m)+' · '+esc(q.t)+'</span></div>';
+  h+='<p class="q">'+esc(q.q)+'</p>';
+  if(q.code) h+='<pre class="code">'+esc(q.code)+'</pre>';
+  if(q.sym) h+=symSVG(q.sym);
+  h+='<div class="ans">';
+  if(ty==='mcq'){
+    h+=it.opts.map(function(o,k){
+      let cls='opt'; if(a){ if(o.ok) cls+=' is-right'; else if(a.pick===k) cls+=' is-wrong'; }
+      return '<button type="button" class="'+cls+'" data-act="pick" data-k="'+k+'"'+(a?' disabled':'')+'><span class="l">'+'ABCD'[k]+'</span><span>'+esc(o.t)+'</span></button>';
+    }).join('');
+  } else if(ty==='tf'){
+    h+='<div class="tf">'+[true,false].map(function(v){
+      let cls='opt'; if(a){ if(q.a===v) cls+=' is-right'; else if(a.pick===v) cls+=' is-wrong'; }
+      return '<button type="button" class="'+cls+'" data-act="tf" data-v="'+v+'"'+(a?' disabled':'')+'>'+(v?'TRUE':'FALSE')+'</button>';
+    }).join('')+'</div>';
+  } else if(ty==='order'){
+    h+=orderBody(it,a);
+  } else {
+    h+='<form class="idf" data-act="submit" autocomplete="off"><input type="text" id="idans" aria-label="Your answer" placeholder="Type your answer" autocapitalize="none" spellcheck="false"'+(a?' disabled value="'+esc(a.val||'')+'"':'')+'>';
+    if(!a) h+='<button class="btn" type="submit">Check answer</button><button class="btn ghost" type="button" data-act="giveup">Show answer</button>';
+    h+='</form>';
+  }
+  h+='</div>';
+  if(a){
+    h+='<div class="fb '+(a.ok?'ok':'no')+'" role="status"><strong>'+(a.ok?(a.override?'Counted as correct.':'Correct.'):(a.gaveUp?'Answer revealed.':'Not quite.'))+'</strong>';
+    if(ty==='id') h+='<p class="a">Answer: '+esc(q.d)+'</p>';
+    if(q.e) h+='<p>'+esc(q.e)+'</p>';
+    if(ty==='id' && !a.ok && !a.gaveUp) h+='<div><button type="button" class="btn ghost" data-act="override">My answer is right</button></div>';
+    h+='</div>';
+  }
+  const last = S.i===n-1;
+  h+='<div class="row"><button type="button" class="btn ghost" data-act="prev"'+(S.i===0?' disabled':'')+'>Back</button><span class="sp"></span>';
+  h+='<button type="button" class="btn ghost" data-act="finish">Finish and see score</button>';
+  h+= last ? '<button type="button" class="btn" data-act="finish">See results</button>' : '<button type="button" class="btn" data-act="next">'+(a?'Next':'Skip')+'</button>';
+  h+='</div>';
+  h+='<details class="jump"><summary>Jump to a question</summary><div class="grid">'+S.items.map(function(_,k){
+    const x=S.ans[k]; let c=''; if(x) c=x.ok?'ok':'no'; if(k===S.i) c+=' cur';
+    return '<button type="button" class="'+c+'" data-act="go" data-k="'+k+'" aria-label="Question '+(k+1)+'">'+(k+1)+'</button>';
+  }).join('')+'</div></details>';
+  h+='</div>';
+  return h;
+}
+function answerText(it,a){
+  if(!a) return null;
+  if(it.ty==='mcq') return a.pick!==undefined&&a.pick!==null ? it.opts[a.pick].t : null;
+  if(it.ty==='tf') return a.pick?'TRUE':'FALSE';
+  if(it.ty==='order') return null;
+  return a.val ? a.val : null;
+}
+function correctText(it){
+  const q=it.q;
+  if(it.ty==='mcq') return q.o[0];
+  if(it.ty==='tf') return q.a?'TRUE':'FALSE';
+  if(it.ty==='order') return null;
+  return q.d;
+}
+function resultHTML(){
+  const L=S.lv, n=S.items.length;
+  let right=0, topics={}, missed=[];
+  S.items.forEach(function(it,k){
+    const a=S.ans[k], t=it.q.t; topics[t]=topics[t]||{r:0,n:0}; topics[t].n++;
+    if(a&&a.ok){ right++; topics[t].r++; } else missed.push(k);
+  });
+  const pc=Math.round(right/n*100);
+  if(S.full && !S.recorded && S.ans.some(Boolean)){ bestSet(L.id,pc); S.recorded=true; renderLevels(); }
+  const verdict = pc>=90?'Strong. You are ready for this level.':pc>=75?'Good. Review the topics in red below.':pc>=50?'Getting there. Go back over the missed items.':'Needs more review. Start with the missed items below.';
+  let h='<div class="card"><div class="bar"><span><b>'+L.k+'</b> · '+L.name+(S.full?'':' · partial round')+'</span></div>';
+  h+='<div class="score"><span class="big">'+right+' / '+n+'</span><span class="pc">'+pc+'%</span></div><p style="margin:0">'+verdict+'</p>';
+  h+='<h2>By topic</h2><ul class="topics">'+Object.keys(topics).map(function(t){
+    const v=topics[t], p=Math.round(v.r/v.n*100);
+    return '<li><span class="t">'+esc(t)+'</span><span class="tr"><i class="'+(p<60?'low':'')+'" style="width:'+p+'%"></i></span><span class="v">'+v.r+'/'+v.n+'</span></li>';
+  }).join('')+'</ul>';
+  if(missed.length){
+    h+='<h2>Missed or skipped ('+missed.length+')</h2><ul class="miss">'+missed.map(function(k){
+      const it=S.items[k], a=S.ans[k];
+      let s='<li><span>'+esc(it.q.q)+(it.q.sym?' (flowchart symbol)':'')+'</span>';
+      if(it.q.code) s+='<pre class="code">'+esc(it.q.code)+'</pre>';
+      if(it.ty==='order'){
+        s+='<span class="ca">Correct order:</span><pre class="code">'+esc(it.q.blocks.join('\n'))+'</pre>';
+        if(!a) s+='<span class="ya">Not answered</span>';
+      } else {
+        const yt=answerText(it,a);
+        s+= yt ? '<span class="ya">Your answer: '+esc(yt)+'</span>' : '<span class="ya">Not answered</span>';
+        s+='<span class="ca">Correct: '+esc(correctText(it))+'</span>';
+      }
+      return s+'</li>';
+    }).join('')+'</ul>';
+  } else h+='<p style="margin:0">No missed questions.</p>';
+  h+='<div class="row">';
+  if(missed.length) h+='<button type="button" class="btn" data-act="retry">Retry missed ('+missed.length+')</button>';
+  h+='<button type="button" class="btn ghost" data-act="restart">Restart this level</button><button type="button" class="btn ghost" data-act="review">Review answers</button></div></div>';
+  return h;
+}
+
+/* ---------- actions ---------- */
+function record(a){ S.ans[S.i]=a; render(false); }
+function currentItem(){ return S.items[S.i]; }
+stage.addEventListener('click',function(e){
+  const b=e.target.closest('[data-act]'); if(!b||!S) return;
+  const act=b.getAttribute('data-act');
+  if(b.tagName==='FORM') return;
+  const it=currentItem();
+  if(act==='pick'){ if(S.ans[S.i]) return; const k=Number(b.getAttribute('data-k')); record({pick:k, ok:it.opts[k].ok}); }
+  else if(act==='tf'){ if(S.ans[S.i]) return; const v=b.getAttribute('data-v')==='true'; record({pick:v, ok:v===it.q.a}); }
+  else if(act==='place'){ if(S.ans[S.i]) return; it.seq.push(Number(b.getAttribute('data-b'))); render(false); }
+  else if(act==='unplace'){ if(S.ans[S.i]) return; it.seq.splice(Number(b.getAttribute('data-p')),1); render(false); }
+  else if(act==='resetorder'){ if(S.ans[S.i]) return; it.seq=[]; render(false); }
+  else if(act==='checkorder'){ if(S.ans[S.i]) return; const n=it.q.blocks.length; const ok = it.seq.length===n && it.seq.every(function(v,p){return v===p;}); record({seq:it.seq.slice(), ok:ok}); }
+  else if(act==='giveup'){
+    if(S.ans[S.i]) return;
+    if(it.ty==='order') record({seq:it.seq.slice(), ok:false, gaveUp:true});
+    else { const inp=document.getElementById('idans'); record({val:inp?inp.value:'', ok:false, gaveUp:true}); }
+  }
+  else if(act==='override'){ const a=S.ans[S.i]; if(a){ a.ok=true; a.override=true; render(false); } }
+  else if(act==='next'){ if(S.i<S.items.length-1){ S.i++; render(true); } }
+  else if(act==='prev'){ if(S.i>0){ S.i--; render(true); } }
+  else if(act==='go'){ S.i=Number(b.getAttribute('data-k')); render(true); }
+  else if(act==='finish'){ S.done=true; render(true); }
+  else if(act==='retry'){ const idx=[]; S.items.forEach(function(x,k){ const a=S.ans[k]; if(!(a&&a.ok)) idx.push(x.src); }); start(S.lv.id, idx); }
+  else if(act==='restart'){ start(S.lv.id); }
+  else if(act==='review'){ S.done=false; S.i=0; render(true); }
+});
+stage.addEventListener('submit',function(e){
+  e.preventDefault(); if(!S||S.ans[S.i]) return;
+  const inp=document.getElementById('idans'); const v=inp?inp.value:'';
+  if(!v.trim()) return;
+  record({val:v, ok:matches(v, currentItem().q.a)});
+});
+levelsEl.addEventListener('click',function(e){
+  const b=e.target.closest('[data-act="start"]'); if(!b) return;
+  start(Number(b.getAttribute('data-lv')));
+});
+modBoxes.forEach(function(b){ b.addEventListener('change',renderLevels); });
+document.addEventListener('keydown',function(e){
+  if(!S||S.done||e.ctrlKey||e.metaKey||e.altKey) return;
+  const tag_=(e.target.tagName||'').toLowerCase(); if(tag_==='input'||tag_==='textarea') return;
+  const a=S.ans[S.i], it=currentItem(), key=e.key.toLowerCase();
+  if(!a && it.ty==='mcq'){ const k='abcd'.indexOf(key); const k2='1234'.indexOf(key); const kk=k>-1?k:k2; if(kk>-1 && it.opts[kk]){ record({pick:kk, ok:it.opts[kk].ok}); } }
+  else if(!a && it.ty==='tf'){ if(key==='t'||key==='f'){ const v=key==='t'; record({pick:v, ok:v===it.q.a}); } }
+  else if(a && (key==='enter'||key==='arrowright') && S.i<S.items.length-1 && tag_!=='button'){ S.i++; render(true); }
+  if(key==='arrowleft' && S.i>0 && tag_!=='button'){ S.i--; render(true); }
+});
+
+renderLevels(); render(false);
+</script>
